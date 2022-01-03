@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include <elf.h>
 
-
+Elf32_Ehdr* entete_elf(FILE * f);
 
 #endif

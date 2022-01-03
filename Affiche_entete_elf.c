@@ -2,7 +2,8 @@
 
 void elf_print_HDR(const Elf32_Ehdr *ehdr){
 
-    printf("ELF Header:\n"
+    printf(
+		"ELF Header:\n"
         "  Machine:                           0x%X\n"
         "  Class:                             0x%X\n"
         "  Type:                              0x%X\n"
@@ -10,7 +11,7 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
         "  Size of section headers:           0x%X (bytes)\n"
 		"  Number of section headers:         0x%X\n"
 		"  Section header string table index: 0x%X\n\n"
-        "  Size of this header:               0x%X (bytes)\n"
+        "  Size of this header:               0x%X (bytes)\n",
 		
         
 		/*"  Data:                              0x%X\n"
@@ -27,10 +28,11 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
 		
 		"  Size of program headers:           0x%X (bytes)\n"
 		"  Number of program headers:         0x%X\n"*/
-		,
+		
 	ehdr->e_machine, ehdr->e_ident[EI_CLASS],
     ehdr->e_type, ehdr->e_shoff,
     ehdr->e_shentsize, ehdr->e_shnum, ehdr->e_shstrndx,
+	ehdr->e_ehsize
     
     /*ehdr->e_ident[EI_DATA],
 	ehdr->e_ident[EI_VERSION], ehdr->e_ident[EI_OSABI],

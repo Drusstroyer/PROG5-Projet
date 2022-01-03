@@ -2,7 +2,7 @@
 
 Elf32_Ehdr* entete_elf(FILE * f){
 
-    Elf32_Ehdr *ehdr;
+    Elf32_Ehdr *ehdr = NULL;
 
     fseek(f, 0, SEEK_SET);
     size_t n = fread(ehdr, 1, sizeof(*ehdr), f);
@@ -15,7 +15,7 @@ Elf32_Ehdr* entete_elf(FILE * f){
     if (ehdr->e_ident[EI_MAG0] != ELFMAG0 ||
         ehdr->e_ident[EI_MAG1] != ELFMAG1 ||
         ehdr->e_ident[EI_MAG2] != ELFMAG2 ||
-        ehdr->e_ident[EI_MAG3] != ELFMAG3 ||
+        ehdr->e_ident[EI_MAG3] != ELFMAG3
     ) {
         fprintf(stderr, "Mauvais format de fichier\n");
         return NULL;

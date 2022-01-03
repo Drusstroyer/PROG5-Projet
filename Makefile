@@ -1,6 +1,11 @@
-CC=clang
-CFLAGS=-Wall -g
+CC=gcc
+CFLAGS=-Wall -g -Werror
 
-entete_elf : entete_elf.o
+test: Affiche_entete_elf.o entete_elf.o
+	$(CC) -o $@ $^ test.c
 
-entete_elf.o : entete_elf.h
+Affiche_entete_elf.o: Affiche_entete_elf.c Affiche_entete_elf.h
+	$(CC) $(CFLAGS) -c $<
+
+entete_elf.o : entete_elf.c entete_elf.h
+	$(CC) $(CFLAGS) -c $<
