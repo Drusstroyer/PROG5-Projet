@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <elf.h>
-
+#include "bits/bfile.h"
+#include "bits/bit_operations.h"
 
 #endif
