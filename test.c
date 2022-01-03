@@ -1,4 +1,4 @@
-#include  <stdio.h>
+#include <stdio.h>
 #include <assert.h>
 
 #include "entete_elf.h"
@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[]){
 
-    FILE *f = fopen(argv[1],"rb");
+    FILE *f = fopen(argv[1],"r");
 
     assert(f == NULL);
 
