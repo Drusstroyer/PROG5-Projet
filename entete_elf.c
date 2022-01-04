@@ -4,6 +4,8 @@
 
 #include "entete_elf.h"
 #include "Affiche_entete_elf.h"
+#include "Affiche_section_elf.h"
+#include "table_section_elf.h"
 
 Elf32_Ehdr* entete_elf(FILE * f){
 
@@ -52,7 +54,13 @@ int main(int argc, char *argv[]){
 
     assert(header != NULL);
 
+    Elf32_Shdr* sections = section_elf(f, header);
+
+    assert(sections != NULL);
+
     elf_print_HDR(header);
+
+    elf_print_section(sections, header);
 
     return 0;
 
