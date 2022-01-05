@@ -84,7 +84,7 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
 	printf("Start of program headers: %0X\n",ehdr->e_phoff);
 	printf("Flags: %0X\n", ehdr->e_flags);
 	printf("Size of program headers: %0X (bytes)\n",ehdr->e_phentsize);
-	printf("Number of program headers: %0x\n",ehdr->e_phnum);
+	printf("Number of program headers: %0x\n\n",ehdr->e_phnum);
 
 	
 }

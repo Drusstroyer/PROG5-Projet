@@ -26,11 +26,11 @@ void elf_print_section(const Elf32_Shdr *shdr, Elf32_Ehdr *ehdr){
             default: printf("Type: Section inactive\n");break;
         }
 
-        printf("Attributs de la section : \n")
+        printf("Attributs de la section : \n");
         switch(shdr[i].sh_flags){
             case 0x1: printf("Flag : SHF_WRITE, la section contient des données modifiables lors de l’exécution du programme\n");
                 break;
-            case 0x2: printf("Flag : SHF_ALLOC, la section fait partie de l’image mémoire du programme à exécuter\n");*
+            case 0x2: printf("Flag : SHF_ALLOC, la section fait partie de l’image mémoire du programme à exécuter\n");
                 break;
             case 0x4: printf("Flag : SHF_EXECINSTR, la section contient du code exécutable \n");
                 break;

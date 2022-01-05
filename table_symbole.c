@@ -1,25 +1,29 @@
 #include "table_symbole.h"
 #include "Affiche_symbole.h"
 #include <assert.h>
+#include <stdint.h>
+#include <string.h>
 
 
 void table_symbole(FILE * f){
     Elf32_Ehdr * ehdr = malloc(sizeof(Elf32_Ehdr*));
-    Elf32_Sym * symbole = malloc(sizeof(Elf32_Sym*));
-    fseek(f, 0, SEEK_SET);
-    size_t n = fread(ehdr, 1, sizeof(*ehdr), f);
-    /*for(int i=0;i<ehdr->e_shentsize;i++){
-        fseek(f,ehdr->e_phoff,SEEK_CUR);
-        fread(symbole,1,sizeof(*symbole),f);
-        printf("\nSymbole:%0X,size:%u",symbole->st_name,symbole->st_size);
-    }*/
-    //size_t tot = ehdr->e_shnum * ehdr->e_shentsize;
     Elf32_Shdr * shdr = malloc(sizeof(Elf32_Shdr*));
-    size_t k = fseek(f,ehdr->e_shoff + ehdr->e_shstrndx,SEEK_SET);
+    char * section=NULL; 
+    fread(ehdr, 1, sizeof(*ehdr), f);
+    fseek(f,ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
     fread(shdr,1,sizeof(*shdr),f);
-    //shdr->
-    
-
+    section = malloc(shdr->sh_size);
+    fseek(f,shdr->sh_offset,SEEK_SET);
+    fread(section,1,shdr->sh_size,f);
+    printf("Il y a %d sections headers, commençant à l'offset 0x%x:\n\n",ehdr->e_shnum,ehdr->e_shoff);
+    for(int i=0;i<ehdr->e_shnum;i++){
+        char * section_name="";
+        fseek(f,ehdr->e_shoff + i * sizeof(*shdr), SEEK_SET);
+        fread(shdr,1,sizeof(*shdr),f);
+        //section_name = (char*)(section + shdr->sh_name);
+        //memcpy(section_name, (char*)&shdr->sh_name,sizeof(Elf32_Word));//traduire le unsigned int en char* 
+        printf("[%2d] %s %0x %0x\n",i,section_name,shdr->sh_addr,shdr->sh_offset);
+    }
     //return symbole;
 }
 
