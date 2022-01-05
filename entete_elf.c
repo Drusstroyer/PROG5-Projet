@@ -54,13 +54,13 @@ int main(int argc, char *argv[]){
 
     assert(header != NULL);
 
-    Elf32_Shdr* sections = section_elf(f, header);
+    /*Elf32_Shdr* sections = section_elf(f, header);
 
     assert(sections != NULL);
-
+*/
     elf_print_HDR(header);
 
-    elf_print_section(sections, header);
+    //elf_print_section(sections, header);
 
     return 0;
 
