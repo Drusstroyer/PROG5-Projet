@@ -25,14 +25,19 @@ void elf_print_section(const Elf32_Shdr *shdr, Elf32_Ehdr *ehdr){
             case SHT_HIUSER: printf("Cette valeur indique la borne supérieure de la plage des indices réservés aux programmes applicatifs. Les types des sections entre SHT_LOUSER et SHT_HIUSER peuvent être utilisés par l'application, sans que cela entre en conflit avec les actuels ou futurs types de sections définis par le système\n");break;
             default: printf("Type: Section inactive\n");break;
         }
+
+        printf("Attributs de la section : \n")
         switch(shdr[i].sh_flags){
-            case 0x1: printf("Flag: SHF_WRITE,  possible d'écrire durant l'exécution du processus\n");break;
-            case 0x2: printf("Flag: SHF_ALLOC, section est présente en mémoire durant l'exécution du processus\n");break;
-            case 0x4: printf("Flag: SHF_EXECINSTR, Cette section contient des instructions machine exécutables\n");break;
-            case 0xf0000000: printf("Flag: SHF_MASKPROC,     Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur\n");break;
+            case 0x1: printf("Flag : SHF_WRITE, la section contient des données modifiables lors de l’exécution du programme\n");
+                break;
+            case 0x2: printf("Flag : SHF_ALLOC, la section fait partie de l’image mémoire du programme à exécuter\n");*
+                break;
+            case 0x4: printf("Flag : SHF_EXECINSTR, la section contient du code exécutable \n");
+                break;
+            case 0xf0000000: printf("Flag: SHF_MASKPROC, Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur\n");
+                break;
         }
-            
-        printf("les informations d’allocation: JE SAIS PAS COMMENT ON AFFICHE CA");
+    
         printf("Position de la section par rapport au debut:              0x%X\n",shdr[i].sh_offset);
 
     }
