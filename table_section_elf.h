@@ -4,6 +4,6 @@
 #include <stdio.h>
 #include <elf.h>
 
-Elf32_Shdr* section_elf(FILE * f,  Elf32_Ehdr *ehdr);
+void section_elf(FILE * f,  Elf32_Ehdr *ehdr);
 
 #endif

@@ -67,7 +67,7 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
 		case ET_LOPROC: printf("Type: Processor-specific LO\n");break;
 		case ET_HIPROC: printf("Type: Processor-specific HI\n");break;
     }
-	printf("Start of section headers: %0X\n", ehdr->e_shoff);
+	printf("Start of section headers: %0X\n", __builtin_bswap32(ehdr->e_shoff));
 	printf("Size of section headers: %0X\n", ehdr->e_shentsize);
 	printf("Number of section headers: %0X\n", ehdr->e_shnum);
 	printf("Section header string table index: %0X\n",ehdr->e_shstrndx);
