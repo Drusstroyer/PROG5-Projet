@@ -4,7 +4,7 @@ progs=test test_symbole
 
 all: $(progs)
 
-test: Affiche_entete_elf.o entete_elf.o Affiche_section_elf.o table_section_elf.o
+test: Affiche_entete_elf.o entete_elf.o Affiche_section_elf.o table_section_elf.o converter.o
 	$(CC) -o $@ $^ 
 
 test_symbole: table_symbole.o Affiche_symbole.o
@@ -26,6 +26,9 @@ Affiche_symbole.o: Affiche_symbole.c Affiche_symbole.h
 	$(CC) -c $(CFLAGS) $<
 
 table_symbole.o: table_symbole.c table_symbole.h Affiche_symbole.h
+	$(CC) -c $(CFLAGS) $<
+
+converter.o: converter.c converter.h
 	$(CC) -c $(CFLAGS) $<
 
 clean: 

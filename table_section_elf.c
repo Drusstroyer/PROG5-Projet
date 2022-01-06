@@ -4,6 +4,7 @@
 
 #include "table_section_elf.h"
 #include "Affiche_section_elf.h"
+#include "converter.h"
 
 Elf32_Shdr* section_elf(FILE * f, Elf32_Ehdr *ehdr){
 
