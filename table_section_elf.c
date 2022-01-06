@@ -45,7 +45,7 @@
 
 void section_elf(FILE * f, Elf32_Ehdr *ehdr){
 
-    Elf32_Shdr *shdr = malloc(sizeof(Elf32_Shdr*));
+    Elf32_Shdr *shdr = malloc(sizeof(Elf32_Shdr));
     // char* SectNames = NULL;
     
     fread(ehdr, 1, sizeof(ehdr), f);

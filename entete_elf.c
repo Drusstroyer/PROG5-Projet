@@ -12,7 +12,7 @@ Elf32_Ehdr* entete_elf(FILE * f){
 
     Elf32_Ehdr *ehdr = malloc(sizeof(Elf32_Ehdr));
 
-    
+    fseek(f,0,SEEK_SET);
     size_t n = fread(ehdr, 1, sizeof(Elf32_Ehdr), f);
 
     if (n != sizeof(Elf32_Ehdr)) {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
 
     //Elf32_Shdr* sections = section_elf(f, header);
 
-    section_elf(f, header);
+    //section_elf(f, header);
     //assert(sections != NULL);
 
     elf_print_HDR(header);

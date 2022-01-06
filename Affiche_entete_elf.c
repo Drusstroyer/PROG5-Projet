@@ -1,4 +1,5 @@
 #include "Affiche_entete_elf.h"
+#include "converter.h"
 
 void elf_print_HDR(const Elf32_Ehdr *ehdr){
 
@@ -67,11 +68,11 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
 		case ET_LOPROC: printf("Type: Processor-specific LO\n");break;
 		case ET_HIPROC: printf("Type: Processor-specific HI\n");break;
     }
-	printf("Start of section headers: %0X\n", ehdr->e_shoff);
-	printf("Size of section headers: %0X\n", ehdr->e_shentsize);
-	printf("Number of section headers: %0X\n", ehdr->e_shnum);
-	printf("Section header string table index: %0X\n",ehdr->e_shstrndx);
-	printf("Size of this header: %0X (bytes)\n\n",ehdr->e_ehsize);
+	printf("Début des en-tetes de section: %0d (octets dans le fichier)\n", convert32(ehdr->e_shoff));
+	printf("Taille des en-tetes de section: %0d (octets)\n", convert16(ehdr->e_shentsize));
+	printf("Nombre d'en-tetes de section: %0d\n", convert16(ehdr->e_shnum));
+	printf("Table d'index des chaines d'en-tete de section: %d\n",convert16(ehdr->e_shstrndx));
+	printf("Taille de cet en-tete: %d (bytes)\n\n",convert16(ehdr->e_ehsize));
 
 	switch(ehdr->e_ident[EI_DATA]){
 		case ELFDATANONE: printf("Data: Invalid data encoding\n");break;
@@ -80,11 +81,11 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
     }
 
 	printf("Version: %0X\n", EV_CURRENT);
-	printf("Entry point address: %0X\n", ehdr->e_entry);
-	printf("Start of program headers: %0X\n",ehdr->e_phoff);
-	printf("Flags: %0X\n", ehdr->e_flags);
-	printf("Size of program headers: %0X (bytes)\n",ehdr->e_phentsize);
-	printf("Number of program headers: %0x\n\n",ehdr->e_phnum);
+	printf("Adresse du point d'entree: 0x%0X\n", convert32(ehdr->e_entry));
+	printf("Debuts des en-tetes de programme: %d (octets dans le fichier)\n",convert32(ehdr->e_phoff));
+	printf("Flags: 0x%0X\n", convert32(ehdr->e_flags));
+	printf("Taille de l'en-tete du programme: %d (octets)\n",convert16(ehdr->e_phentsize));
+	printf("Nombre d'en-tete du programme: %d\n\n",convert16(ehdr->e_phnum));
 
 	
 }
