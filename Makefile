@@ -32,4 +32,4 @@ converter.o: converter.c converter.h
 	$(CC) -c $(CFLAGS) $<
 
 clean: 
-	rm -r $(progs) *.o *.txt
+	rm -r -f $(progs) *.o *.txt
