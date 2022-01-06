@@ -9,12 +9,12 @@
 
 Elf32_Ehdr* entete_elf(FILE * f){
 
-    Elf32_Ehdr *ehdr = malloc(sizeof(Elf32_Ehdr*));
+    Elf32_Ehdr *ehdr = malloc(sizeof(Elf32_Ehdr));
 
     
-    size_t n = fread(ehdr, 1, sizeof(*ehdr), f);
+    size_t n = fread(ehdr, 1, sizeof(Elf32_Ehdr), f);
 
-    if (n != sizeof(*ehdr)) {
+    if (n != sizeof(Elf32_Ehdr)) {
 		fprintf(stderr, "Impossible de lire le fichier\n");
 		return NULL;
 	}

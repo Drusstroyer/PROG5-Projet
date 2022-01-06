@@ -1,9 +1,9 @@
 #include "Affiche_section_elf.h"
-
+#include <endian.h>
 void elf_print_section(const Elf32_Shdr *shdr, Elf32_Ehdr *ehdr){
     for (int i=0; i < ehdr->e_shnum; i++){
         printf("Section header:\n");
-        printf("Numéro de la section:                                     0x%d\n",i);
+        printf("Numéro de la section:                                     %d\n",i);
         printf("Nom de la section:                                        0x%X\n",shdr[i].sh_name);
         printf("Taille de la section:                                     0x%X\n",shdr[i].sh_size);
             

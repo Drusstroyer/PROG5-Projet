@@ -14,7 +14,7 @@ Elf32_Shdr* section_elf(FILE * f, Elf32_Ehdr *ehdr){
     fseek(f, ehdr->e_shoff, SEEK_SET);
 
     size_t s = fread(shdr, 1, tot, f);*/
-    Elf32_Shdr * shdr = malloc(sizeof(Elf32_Shdr*));
+    Elf32_Shdr * shdr = malloc(sizeof(Elf32_Shdr));
     char * section=NULL; 
     fread(ehdr, 1, sizeof(*ehdr), f);
     fseek(f,ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
