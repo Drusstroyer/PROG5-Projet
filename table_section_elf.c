@@ -6,7 +6,7 @@
 #include "Affiche_section_elf.h"
 #include "converter.h"
 
-Elf32_Shdr* section_elf(FILE * f, Elf32_Ehdr *ehdr){
+//Elf32_Shdr* section_elf(FILE * f, Elf32_Ehdr *ehdr){
 
     //size_t tot = ehdr->e_shnum * ehdr->e_shentsize;
     /*
@@ -15,15 +15,15 @@ Elf32_Shdr* section_elf(FILE * f, Elf32_Ehdr *ehdr){
     fseek(f, ehdr->e_shoff, SEEK_SET);
 
     size_t s = fread(shdr, 1, tot, f);*/
-    Elf32_Shdr * shdr = malloc(sizeof(Elf32_Shdr));
-    char * section=NULL; 
-    fread(ehdr, 1, sizeof(*ehdr), f);
-    fseek(f,ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
-    fread(shdr,1,sizeof(*shdr),f);
-    section = malloc(shdr->sh_size);
-    fseek(f,shdr->sh_offset,SEEK_SET);
-    fread(section,1,shdr->sh_size,f);
-    printf("Il y a %d sections headers, commençant à l'offset 0x%x:\n\n",ehdr->e_shnum,ehdr->e_shoff);
+    // Elf32_Shdr * shdr = malloc(sizeof(Elf32_Shdr));
+    // char * section=NULL; 
+    // fread(ehdr, 1, sizeof(*ehdr), f);
+    // fseek(f,ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
+    // fread(shdr,1,sizeof(*shdr),f);
+    // section = malloc(shdr->sh_size);
+    // fseek(f,shdr->sh_offset,SEEK_SET);
+    // fread(section,1,shdr->sh_size,f);
+    // printf("Il y a %d sections headers, commençant à l'offset 0x%x:\n\n",ehdr->e_shnum,ehdr->e_shoff);
     /*for(int i=0;i<ehdr->e_shnum;i++){
         char * section_name="";
         fseek(f,ehdr->e_shoff + i * sizeof(*shdr), SEEK_SET);
@@ -39,6 +39,66 @@ Elf32_Shdr* section_elf(FILE * f, Elf32_Ehdr *ehdr){
 		return 0;
     }
     */
-    return shdr;
+    //return shdr;
+
+// }
+
+void section_elf(FILE * f, Elf32_Ehdr *ehdr){
+
+    Elf32_Shdr *shdr = malloc(sizeof(Elf32_Shdr*));
+    char* SectNames = NULL;
+    
+    fread(ehdr, 1, sizeof(ehdr), f);
+
+    fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * sizeof(shdr), SEEK_SET);
+    fread(shdr, 1, sizeof(shdr), f);
+
+    SectNames = malloc(shdr->sh_size);
+    fseek(f, shdr->sh_offset, SEEK_SET);
+    fread(SectNames, 1, shdr->sh_size, f);
+
+    printf("%X", ehdr->e_shnum);
+     
+    for (int i = 0; i < convert16(ehdr->e_shnum); i++) {
+
+        fseek(f, ehdr->e_shoff + i * ehdr->e_shentsize, SEEK_SET);
+        fread(&shdr, 1, sizeof(shdr), f);
+
+        printf("Section header:\n");
+        printf("Numéro de la section:                                     0x%d\n",i);
+        printf("Nom de la section:                                        0x%X\n",shdr[i].sh_name);
+        printf("Taille de la section:                                     0x%X\n",shdr[i].sh_size);
+            
+        switch(shdr[i].sh_type){
+            case SHT_PROGBITS: printf("Type: Section défini par le proramme\n");break;
+            case SHT_SYMTAB: printf("Type: Section contient une table de symbole\n");break;
+            case SHT_DYNSYM: printf("Type: Section contient une table de symbole\n");break;
+            case SHT_STRTAB: printf("Type: section contient des chaîne de charactères\n");break;
+            case SHT_RELA: printf("Type: section holds relocation entries\n");break;
+            case SHT_HASH: printf("Type: section holds a symbol hash table\n");break;
+            case SHT_DYNAMIC: printf("Type: section contient les informations de liaison dynamique\n");break;
+            case SHT_NOTE: printf("Type: Section contient un marquage quelconque pour le fichier\n");break;
+            case SHT_NOBITS: printf("Type: section défini par le programme mais n'est pas dans le fichier\n");break;
+            case SHT_REL: printf("Type: section contient des entrées de repositionnement\n");break;
+            case SHT_SHLIB: printf("Type: section est réservée et sa sémantique n'est pas définie.\n");break;
+            case SHT_LOPROC: printf("Type: Section réservée jusqu'à la section SHT_HIPROC par le processeur\n");break;
+            case SHT_HIPROC: printf("Type: Section réservée par le processeur depuis la section SHT_LOPROC\n");break;
+            case SHT_LOUSER: printf("Cette valeur indique la borne inférieure de la plage des indices réservés aux programmes applicatifs.\n");break;
+            case SHT_HIUSER: printf("Cette valeur indique la borne supérieure de la plage des indices réservés aux programmes applicatifs. Les types des sections entre SHT_LOUSER et SHT_HIUSER peuvent être utilisés par l'application, sans que cela entre en conflit avec les actuels ou futurs types de sections définis par le système\n");break;
+            default: printf("Type: Section inactive\n");break;
+        }
+        switch(shdr[i].sh_flags){
+            case 0x1: printf("Flag: SHF_WRITE,  possible d'écrire durant l'exécution du processus\n");break;
+            case 0x2: printf("Flag: SHF_ALLOC, section est présente en mémoire durant l'exécution du processus\n");break;
+            case 0x4: printf("Flag: SHF_EXECINSTR, Cette section contient des instructions machine exécutables\n");break;
+            case 0xf0000000: printf("Flag: SHF_MASKPROC,     Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur\n");break;
+        }
+            
+        //printf("les informations d’allocation: JE SAIS PAS COMMENT ON AFFICHE CA");
+        printf("Position de la section par rapport au debut:              0x%X\n",shdr[i].sh_offset);
+        printf("\n");
+        
+            
+    }   
 
 }

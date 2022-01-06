@@ -3,8 +3,6 @@
 #include "converter.h"
 
 void elf_print_section(const Elf32_Shdr *shdr, Elf32_Ehdr *ehdr){
-    uint16_t val = convert16(ehdr->e_shnum);
-    printf("Value After Converting = 0x%x\n", val);
     // for (int i=0; i < val; i++){
     //     printf("Section header:\n");
     //     printf("Numéro de la section:                                     %d\n",i);
