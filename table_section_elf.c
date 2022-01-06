@@ -46,19 +46,18 @@
 void section_elf(FILE * f, Elf32_Ehdr *ehdr){
 
     Elf32_Shdr *shdr = malloc(sizeof(Elf32_Shdr*));
-    char* SectNames = NULL;
+    // char* SectNames = NULL;
     
     fread(ehdr, 1, sizeof(ehdr), f);
 
     fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * sizeof(shdr), SEEK_SET);
     fread(shdr, 1, sizeof(shdr), f);
 
-    SectNames = malloc(shdr->sh_size);
-    fseek(f, shdr->sh_offset, SEEK_SET);
-    fread(SectNames, 1, shdr->sh_size, f);
+    // SectNames = malloc(shdr->sh_size);
+    // fseek(f, shdr->sh_offset, SEEK_SET);
+    // fread(SectNames, 1, shdr->sh_size, f);
 
-    printf("%X", ehdr->e_shnum);
-     
+
     for (int i = 0; i < convert16(ehdr->e_shnum); i++) {
 
         fseek(f, ehdr->e_shoff + i * ehdr->e_shentsize, SEEK_SET);
