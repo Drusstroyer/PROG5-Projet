@@ -28,5 +28,8 @@ Affiche_symbole.o: Affiche_symbole.c Affiche_symbole.h
 table_symbole.o: table_symbole.c table_symbole.h Affiche_symbole.h
 	$(CC) -c $(CFLAGS) $<
 
+converter.o: converter.c converter.h
+	$(CC) -c $(CFLAGS) $<
+
 clean: 
 	rm -r $(progs) *.o *.txt

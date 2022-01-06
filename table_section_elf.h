@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <elf.h>
 
-void section_elf(FILE * f,  Elf32_Ehdr *ehdr);
+void section_elf(FILE * f, Elf32_Ehdr *ehdr);
+void find_type(char * sh, Elf32_Word n);
 
 #endif
