@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
 
     //Elf32_Shdr* sections = section_elf(f, header);
 
-    //section_elf(f, header);
+    section_elf(f, header);
     //assert(sections != NULL);
 
     elf_print_HDR(header);

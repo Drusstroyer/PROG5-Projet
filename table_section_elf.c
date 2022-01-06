@@ -45,30 +45,32 @@
 
 void section_elf(FILE * f, Elf32_Ehdr *ehdr){
 
-    Elf32_Shdr *shdr = malloc(sizeof(Elf32_Shdr));
+    Elf32_Shdr shdr;// malloc(convert16(ehdr->e_shnum) sizeof(Elf32_Shdr));
     // char* SectNames = NULL;
     
-    fread(ehdr, 1, sizeof(ehdr), f);
+    //fread(ehdr, 1, sizeof(ehdr), f);
 
-    fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * sizeof(shdr), SEEK_SET);
-    fread(shdr, 1, sizeof(shdr), f);
+    fseek(f, convert32(ehdr->e_shoff) + convert16(ehdr->e_shstrndx) * convert16(ehdr->e_shentsize), SEEK_SET);
+    //fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * sizeof(shdr),SEEK_SET);
+    fread(&shdr, 1, sizeof(shdr), f);
 
-    // SectNames = malloc(shdr->sh_size);
-    // fseek(f, shdr->sh_offset, SEEK_SET);
-    // fread(SectNames, 1, shdr->sh_size, f);
+    char *SectNames = malloc(convert32(shdr.sh_size));
+    fseek(f, convert32(shdr.sh_offset), SEEK_SET);
+    fread(SectNames, 1, convert32(shdr.sh_size), f);
 
 
-    for (int i = 0; i < convert16(ehdr->e_shnum); i++) {
-
-        fseek(f, ehdr->e_shoff + i * ehdr->e_shentsize, SEEK_SET);
+    for (int i = 1; i <= convert16(ehdr->e_shnum); i++) {
+        char* name = "";
+        //fseek(f,convert32(ehdr->e_shoff) + i * convert16(ehdr->e_shstrndx) * convert16(ehdr->e_shentsize), SEEK_SET);
+        fseek(f,convert32(ehdr->e_shoff) + i * sizeof(shdr), SEEK_SET);
         fread(&shdr, 1, sizeof(shdr), f);
-
+        name = SectNames + convert32(shdr.sh_name);
         printf("Section header:\n");
-        printf("Numéro de la section:                                     0x%d\n",i);
-        printf("Nom de la section:                                        0x%X\n",shdr[i].sh_name);
-        printf("Taille de la section:                                     0x%X\n",shdr[i].sh_size);
+        printf("Numéro de la section:                                     %d\n",i);
+        printf("Nom de la section:                                        %s\n",name);
+        printf("Taille de la section:                                     %d\n",convert32(shdr.sh_size));
             
-        switch(shdr[i].sh_type){
+        switch(convert32(shdr.sh_type)){
             case SHT_PROGBITS: printf("Type: Section défini par le proramme\n");break;
             case SHT_SYMTAB: printf("Type: Section contient une table de symbole\n");break;
             case SHT_DYNSYM: printf("Type: Section contient une table de symbole\n");break;
@@ -86,7 +88,7 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
             case SHT_HIUSER: printf("Cette valeur indique la borne supérieure de la plage des indices réservés aux programmes applicatifs. Les types des sections entre SHT_LOUSER et SHT_HIUSER peuvent être utilisés par l'application, sans que cela entre en conflit avec les actuels ou futurs types de sections définis par le système\n");break;
             default: printf("Type: Section inactive\n");break;
         }
-        switch(shdr[i].sh_flags){
+        switch(convert32(shdr.sh_flags)){
             case 0x1: printf("Flag: SHF_WRITE,  possible d'écrire durant l'exécution du processus\n");break;
             case 0x2: printf("Flag: SHF_ALLOC, section est présente en mémoire durant l'exécution du processus\n");break;
             case 0x4: printf("Flag: SHF_EXECINSTR, Cette section contient des instructions machine exécutables\n");break;
@@ -94,7 +96,7 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
         }
             
         //printf("les informations d’allocation: JE SAIS PAS COMMENT ON AFFICHE CA");
-        printf("Position de la section par rapport au debut:              0x%X\n",shdr[i].sh_offset);
+        printf("Position de la section par rapport au debut:              0x%X\n",convert32(shdr.sh_offset));
         printf("\n");
         
             
