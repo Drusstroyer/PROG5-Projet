@@ -6,7 +6,7 @@
 #include "table_section_elf.h"
 #include "converter.h"
 
-//Fonction permettant de trouver tous les flags d'une section
+
 void get_flags(char *flag, int val) {
 
   int i, j = 0;
@@ -26,7 +26,7 @@ void get_flags(char *flag, int val) {
   flag[j] = '\0';
 }
 
-//Fonction permettant d'inverser une chaîne de caractère (pour afficher les flags dans l'ordre)
+
 void reverse_str(char *str) {
   int n = strlen(str);
 

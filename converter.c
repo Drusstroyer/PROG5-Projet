@@ -1,6 +1,6 @@
 #include "converter.h"
 
-//converti un entier sur 4 octets de little endian a big endian
+
 uint32_t convert32(uint32_t val){
     uint32_t converted = 0;
     converted |= ((0x000000ff & val) << 24);
@@ -11,7 +11,7 @@ uint32_t convert32(uint32_t val){
     return converted;
 }
 
-//converti un entier sur 2 octets de little endian a big endian
+
 uint16_t convert16(uint16_t val){
 
     uint16_t converted = 0;
