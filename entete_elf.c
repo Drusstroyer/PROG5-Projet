@@ -62,6 +62,8 @@ int main(int argc, char *argv[]){
 
     elf_print_HDR(header);
 
+    
+
     //elf_print_section(sections, header);
 
     return 0;

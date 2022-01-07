@@ -7,7 +7,7 @@ all: $(progs)
 test: Affiche_entete_elf.o entete_elf.o Affiche_section_elf.o table_section_elf.o converter.o
 	$(CC) -o $@ $^ 
 
-test_symbole: table_symbole.o Affiche_symbole.o
+test_symbole: table_symbole.o Affiche_symbole.o converter.o
 	$(CC) -o $@ $^
 
 Affiche_entete_elf.o: Affiche_entete_elf.c Affiche_entete_elf.h

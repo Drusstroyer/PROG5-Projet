@@ -99,7 +99,7 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
         printf("Position de la section par rapport au debut:              0x%X\n",convert32(shdr.sh_offset));
         printf("\n");
         
-            
-    }   
-
+        
+    }  
+    
 }
