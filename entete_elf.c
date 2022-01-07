@@ -5,6 +5,7 @@
 #include "entete_elf.h"
 #include "Affiche_entete_elf.h"
 #include "table_section_elf.h"
+#include "read_section_elf.h"
 #include "converter.h"
 
 Elf32_Ehdr* entete_elf(FILE * f){
@@ -56,7 +57,10 @@ int main(int argc, char *argv[]){
 
     section_elf(f, header);
 
-    elf_print_HDR(header);
+    //elf_print_HDR(header);
+
+
+    read_section(f, header, 10);
 
     return 0;
 
