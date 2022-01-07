@@ -62,8 +62,6 @@ int main(int argc, char *argv[]){
 
     read_section(f, header, 10);
 
-    
-
     //elf_print_section(sections, header);
 
     return 0;

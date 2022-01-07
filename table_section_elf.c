@@ -92,12 +92,12 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
             case SHT_HIUSER: type = "HIUSER";break;
             default: type = "NULL";break;
         }
-            
-        //printf("les informations d’allocation: JE SAIS PAS COMMENT ON AFFICHE CA");
-        printf("Position de la section par rapport au debut:              0x%X\n",convert32(shdr.sh_offset));
-        printf("\n");
-        
-        
-    }  
-    
+
+        //affichage des sections
+        printf("  [%2d] %-18s %-17s %016x  0x%08X %08x %08x %-7s %-5d %-3d  %d\n", i, name, type, convert32(shdr.sh_addr), 
+                convert32(shdr.sh_offset), convert32(shdr.sh_size), convert32(shdr.sh_entsize), 
+                flags, convert32(shdr.sh_link), convert32(shdr.sh_info), convert32(shdr.sh_addralign));
+    }   
+    printf("\n");
+
 }
