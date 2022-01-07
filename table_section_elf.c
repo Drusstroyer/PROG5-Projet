@@ -1,18 +1,53 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "table_section_elf.h"
 #include "converter.h"
+
+//Fonction permettant de trouver tous les flags d'une section
+void get_flags(char *flag, int val) {
+
+  int i, j = 0;
+  strcpy(flag, "");
+
+  char flagChar[11] = {'T', 'G', 'O', 'L', 'I', 'S', 'M', 'X', 'A', 'W', ' '}; 
+  int flagVal[11] = {0x400, 0x200, 0x100, 0x80, 0x40, 0x20, 0x10, 0x4, 0x2, 0x1, 0x0}; 
+
+  for (i = 0; val > 0x0; i++) {
+    if (val >= flagVal[i])
+    {
+      flag[j] = flagChar[i];
+      val = val - flagVal[i];
+      j++;
+    }
+  }
+  flag[j] = '\0';
+}
+
+//Fonction permettant d'inverser une chaîne de caractère (pour afficher les flags dans l'ordre)
+void reverse_str(char *str) {
+  int n = strlen(str);
+
+  for (int i = 0; i < n / 2; i++)
+  {
+    char ch = str[i];
+    str[i] = str[n - i - 1];
+    str[n - i - 1] = ch;
+  }
+}
 
 
 void section_elf(FILE * f, Elf32_Ehdr *ehdr){
 
     Elf32_Shdr shdr;
+    char flags[7] = "";
 
     fseek(f, convert32(ehdr->e_shoff) + convert16(ehdr->e_shstrndx) * convert16(ehdr->e_shentsize), SEEK_SET);
     fread(&shdr, 1, sizeof(shdr), f);
 
+    //permet de récupérer le nom de la section
     char *SectNames = malloc(convert32(shdr.sh_size));
     fseek(f, convert32(shdr.sh_offset), SEEK_SET);
     fread(SectNames, 1, convert32(shdr.sh_size), f);
@@ -24,16 +59,21 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
            "Link  Info Align\n");
 
     for (int i = 0; i <= convert16(ehdr->e_shnum) - 1; i++) {
+
         char* name = "";
         char* type = "";
-        char* flags = "";
 
         fseek(f,convert32(ehdr->e_shoff) + i * sizeof(shdr), SEEK_SET);
         fread(&shdr, 1, sizeof(shdr), f);
 
+        //nom de la section i
         name = SectNames + convert32(shdr.sh_name);
-        
 
+        //flags de la section i
+        get_flags(flags, convert32(shdr.sh_flags));
+        reverse_str(flags);
+        
+        //type de la section i
         switch(convert32(shdr.sh_type)){
             case SHT_PROGBITS: type = "PROGBITS";break;
             case SHT_SYMTAB: type = "SYMTAB";break;
@@ -53,14 +93,10 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
             default: type = "NULL";break;
         }
 
-        switch(convert32(shdr.sh_flags)){
-            case 0x1: flags = "SHF_WRITE";break;
-            case 0x2: flags = "HF_ALLOC";break;
-            case 0x4: flags = "SHF_EXECINSTR";break;
-            case 0xf0000000: flags = "SHF_MASKPROC";break;
-        }
-
-        printf("  [%2d] %-18s %-17s %016x  0x%08X %08x %08x %-7s %-5d %-3d  %d\n", i, name, type, convert32(shdr.sh_addr), convert32(shdr.sh_offset), convert32(shdr.sh_size), convert32(shdr.sh_entsize), flags, convert32(shdr.sh_link), convert32(shdr.sh_info), convert32(shdr.sh_addralign));
+        //affichage des sections
+        printf("  [%2d] %-18s %-17s %016x  0x%08X %08x %08x %-7s %-5d %-3d  %d\n", i, name, type, convert32(shdr.sh_addr), 
+                convert32(shdr.sh_offset), convert32(shdr.sh_size), convert32(shdr.sh_entsize), 
+                flags, convert32(shdr.sh_link), convert32(shdr.sh_info), convert32(shdr.sh_addralign));
     }   
     printf("\n");
 
