@@ -30,6 +30,6 @@ read_section_elf.o: read_section_elf.c read_section_elf.h
 
 converter.o: converter.c converter.h
 	$(CC) -c $(CFLAGS) $<
-
+	
 clean: 
 	rm -r -f $(progs) *.o *.txt

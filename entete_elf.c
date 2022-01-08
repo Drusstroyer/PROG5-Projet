@@ -55,12 +55,11 @@ int main(int argc, char *argv[]){
 
     assert(header != NULL);
 
-    section_elf(f, header);
+    //section_elf(f, header);
 
     //elf_print_HDR(header);
-
-
-    read_section(f, header, 10);
+     
+    read_section(f, header, 14);
 
     //elf_print_section(sections, header);
 
