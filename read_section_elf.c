@@ -8,13 +8,23 @@
 #include "converter.h"
 
 
-//penser a faire de la robustesse
-void read_section(FILE * f, Elf32_Ehdr *ehdr, int n){
+//PB AU NIVEAU DE L'AFFICHAGE DU NOM DE LA SECTION EXAMINEE
+void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
 
     Elf32_Shdr shdr;
+    int n;
+
+    if(isNumber(m) == 0){
+        n = atoi(m);
+    }
 
     fseek(f, convert32(ehdr->e_shoff) + convert16(ehdr->e_shstrndx) * convert16(ehdr->e_shentsize), SEEK_SET);
     fread(&shdr, 1, sizeof(shdr), f);
+    
+    if (n > convert16(ehdr->e_shnum) - 1) {
+        printf("La section %d n'existe pas\n", n);
+        return;
+    }
 
     fseek(f,convert32(ehdr->e_shoff) + n * sizeof(shdr), SEEK_SET);
     fread(&shdr, 1, sizeof(shdr), f);
@@ -22,9 +32,6 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, int n){
     char *SectNames = malloc(convert32(shdr.sh_size));
     fseek(f, convert32(shdr.sh_offset), SEEK_SET);
     fread(SectNames, 1, convert32(shdr.sh_size), f);
-            
-    // printf("offset : %X \n", convert32(shdr.sh_offset));
-    // printf("size : %X \n", convert32(shdr.sh_size));
 
     char* name = "";
     name = SectNames + convert32(shdr.sh_name);

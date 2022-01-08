@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "entete_elf.h"
 #include "Affiche_entete_elf.h"
@@ -45,23 +47,81 @@ Elf32_Ehdr* entete_elf(FILE * f){
 
 
 
+
+// option à passer en argument : -S affiche la table des sections
+//                               -h affiche l'entete
+//                               -x affiche le contenu de la section passé en argument après
+// exemple d'utilisation : ./read_elf -S elf_linker-1.0/Examples_loader/example1.o
+//                         ./read_elf -x 14 elf_linker-1.0/Examples_loader/example3.o
 int main(int argc, char *argv[]){
 
-    FILE *f = fopen(argv[1],"rb");
+    FILE *f;
 
-    assert(f != NULL);
+    if (argc > 1){
+
+        if(argv[argc-1] != NULL){
+
+            f = fopen(argv[argc-1],"rb");
+
+        }
+    }
+    else {
+        printf("Veuillez passer un fichier existant en argument du programme.\n");
+        return 0;
+    }
     
+    assert(f != NULL);
+
     Elf32_Ehdr* header = entete_elf(f);
 
     assert(header != NULL);
 
-    //section_elf(f, header);
+    int was_a_sec = 0;
 
-    //elf_print_HDR(header);
-     
-    read_section(f, header, 14);
+    for(int i = 1; i < argc - 1; i++){
 
-    //elf_print_section(sections, header);
+        if(strcmp(argv[i],"-h")==0){
+
+            elf_print_HDR(header);
+
+        }
+        else if(strcmp(argv[i],"-S")==0){
+
+            section_elf(f, header);
+
+        }
+        else if(strcmp(argv[i],"-x")==0){
+            
+            char* sec_name = "";
+
+            sec_name = argv[i + 1];
+
+            if (strcmp(sec_name, "") != 0){
+                read_section(f, header, sec_name);
+            }
+            else {
+                printf("L'argument %s passé pour la section n'est pas valide\n", argv[i + 1]);
+                return 0;
+            }
+            
+            was_a_sec = 1;
+        }
+        else 
+        {
+            if (was_a_sec == 0){
+
+                printf("L'option %s n'existe pas.\n",argv[i]);
+                was_a_sec = 0;
+
+            }
+        }
+        
+    }
+    // else {
+
+    //         elf_print_HDR(header);
+
+    //     }
 
     return 0;
 

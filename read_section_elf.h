@@ -5,7 +5,7 @@
 #include <elf.h>
 
 
-void read_section(FILE * f, Elf32_Ehdr *ehdr, int n); 
+void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m); 
 
 
 #endif

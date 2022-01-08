@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-Wall -g
-progs=test test_symbole
+progs=read_elf test_symbole
 
 all: $(progs)
 
-test: Affiche_entete_elf.o entete_elf.o table_section_elf.o converter.o read_section_elf.o
+read_elf: Affiche_entete_elf.o entete_elf.o table_section_elf.o converter.o read_section_elf.o
 	$(CC) -o $@ $^ 
 
 test_symbole: table_symbole.o Affiche_symbole.o converter.o
