@@ -14,6 +14,7 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
 		case 0x7E: printf("Machine: Intel 80860\n");break; 
 		case 0x8E: printf("Machine: MIPS RS3000 Big-Endian\n");break;
 		case 0x10E: printf("Machine: MIPS RS4000 Big-Endian\n");break;
+		case 0x28E: printf("Machine: ARM\n");break;
 		default: printf("Machine: Reserved for future use\n");break;
 	}
 	switch(ehdr->e_ident[EI_CLASS]){
@@ -38,8 +39,8 @@ void elf_print_HDR(const Elf32_Ehdr *ehdr){
 
 	switch(ehdr->e_ident[EI_DATA]){
 		case ELFDATANONE: printf("Data: Invalid data encoding\n");break;
-		case ELFDATA2LSB: printf("Data: LSB Encoding\n");break;
-		case ELFDATA2MSB: printf("Data: MSB Encoding\n");break;
+		case ELFDATA2LSB: printf("Data: LSB Encoding (little endian)\n");break;
+		case ELFDATA2MSB: printf("Data: MSB Encoding (big endian)\n");break;
     }
 
 	printf("Version: %0X\n", EV_CURRENT);

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "converter.h"
+#include "table_relocation_elf.h"
 
 void table_symbole(FILE * f){
     Elf32_Ehdr ehdr;
@@ -75,7 +76,8 @@ void table_symbole(FILE * f){
 int main(int argc, char ** argv){
     FILE * f = fopen(argv[1],"rb");
     assert(f != NULL);
-    table_symbole(f);
+    //table_symbole(f);
+    table_relocation(f);
     //assert(symbole != NULL);
     //affiche_symbole(symbole);
 }
