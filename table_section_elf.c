@@ -53,7 +53,7 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
     fread(SectNames, 1, convert32(shdr.sh_size), f);
 
 
-    printf("Il y a %d section header, commençant à l'offset 0x%x:\n\n", convert16(ehdr->e_shnum), convert32(ehdr->e_shoff));
+    printf("Il y a %d section headers, commençant à l'offset 0x%x:\n\n", convert16(ehdr->e_shnum), convert32(ehdr->e_shoff));
     printf("Section Headers:\n  [Nr] Name                Type             Address "
            "          Offset     Size     EntSize  Flags   "
            "Link  Info Align\n");
@@ -99,5 +99,6 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
                 flags, convert32(shdr.sh_link), convert32(shdr.sh_info), convert32(shdr.sh_addralign));
     }   
     printf("\n");
+    printf("Flags: W (write), A (alloc), X (execute), M (merge), S (strings), I (info), \n L (link order), O (extra OS processing required), G (group), T (TLS), \n C (compressed), x (unknown), o (OS specific), E (exclude),\n (purecode), p (processor specific) \n");
 
 }

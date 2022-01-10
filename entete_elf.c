@@ -70,6 +70,14 @@ int main(int argc, char *argv[]){
         return 0;
     }
     
+    if(argc == 2){
+        printf("Usage: ./read-elf <option> fichier ELF\n");
+        printf(" Afficher les informations à propos du contenu du format des fichiers ELF\n Les options sont :\n");
+        printf("    -h: Afficher l'en-tête du fichier elf\n");
+        printf("    -S: Afficher l'en-tête des sections\n");
+        printf("    -x <string>: Afficher le contenu de la section avec le nom <string> en hexadécimal.\n");
+    }
+    
     assert(f != NULL);
 
     Elf32_Ehdr* header = entete_elf(f);
