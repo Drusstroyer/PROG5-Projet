@@ -28,14 +28,15 @@ void table_relocation(FILE *f){
                 case R_X86_64_NONE: printf("There are no relocations in this file\n");return; // Il n'y en a pas on stop le programme sur ce return. 
                 default:break;
             }
-            printf("OFFSET : 0x%lx\n",shdr.sh_offset);
+            printf("\nOFFSET : 0x%lx\n",shdr.sh_offset);
+            printf("  Décalage        Info           Type           Val.-symboles Noms-symb.+ Addenda\n");
             for(int j=0;j<shdr.sh_size/shdr.sh_entsize;j++){
                 //char * name= "";
                 fseek(f,shdr.sh_offset + j * shdr.sh_entsize,SEEK_SET);
                 fread(&relocation,1,sizeof(relocation),f);
                 //name = SectNames + shdr.
-                printf("decalage: 0x%0lx",relocation.r_offset);// le decalage
-                printf("le r_info : %0lx\n",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre..  (le R_INFO)
+                printf("00000000%lx ",relocation.r_offset);// le decalage
+                printf("%0lx ",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre..  (le R_INFO)
                 /*switch(ELF64_R_TYPE(relocation.r_info)){ //le type
                 
                     case R_ARM_NONE: printf("R_ARM_NONE\n");break;
@@ -70,48 +71,48 @@ void table_relocation(FILE *f){
                     case R_ARM_JUMP24:printf("R_ARM_JUMP24\n");break;
                 }*/
                 switch(ELF64_R_TYPE(relocation.r_info)){ //JUSTE POUR L'AFFICHAGE QUE TU TESTE QUE CA RENDENT BIEN
-                    case R_X86_64_NONE:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_PC32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOT32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_PLT32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_COPY:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GLOB_DAT:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_JUMP_SLOT:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_RELATIVE:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTPCREL:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_32S:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_16:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_PC16:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_8:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_PC8:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_DTPMOD64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_DTPOFF64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_TPOFF64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_TLSGD:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_TLSLD:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_DTPOFF32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTTPOFF:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_TPOFF32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_PC64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTOFF64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTPC32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOT64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTPCREL64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTPC64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTPLT64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_PLTOFF64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_SIZE32:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_SIZE64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTPC32_TLSDESC:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_TLSDESC_CALL:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_TLSDESC:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_IRELATIVE:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_RELATIVE64:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_GOTPCRELX:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_REX_GOTPCRELX:printf("R_X86_64_NONE\n");break;
-                    case R_X86_64_NUM:printf("R_X86_64_NONE\n");break;
+                    case R_X86_64_NONE:printf("R_X86_64_NONE ");break;
+                    case R_X86_64_64:printf("R_X86_64_64 ");break;
+                    case R_X86_64_PC32:printf("R_X86_64_PC32 ");break;
+                    case R_X86_64_GOT32:printf("R_X86_64_GOT32 ");break;
+                    case R_X86_64_PLT32:printf("R_X86_64_PLT32 ");break;
+                    case R_X86_64_COPY:printf("R_X86_64_COPY ");break;
+                    case R_X86_64_GLOB_DAT:printf("R_X86_64_GLOB_DAT ");break;
+                    case R_X86_64_JUMP_SLOT:printf("R_X86_64_JUMP_SLOT ");break;
+                    case R_X86_64_RELATIVE:printf("R_X86_64_RELATIVE ");break;
+                    case R_X86_64_GOTPCREL:printf("R_X86_64_GOTPCREL ");break;
+                    case R_X86_64_32:printf("R_X86_64_32 ");break;
+                    case R_X86_64_32S:printf("R_X86_64_32S ");break;
+                    case R_X86_64_16:printf("R_X86_64_16 ");break;
+                    case R_X86_64_PC16:printf("R_X86_64_PC16 ");break;
+                    case R_X86_64_8:printf("R_X86_64_8 ");break;
+                    case R_X86_64_PC8:printf("R_X86_64_PC8 ");break;
+                    case R_X86_64_DTPMOD64:printf("R_X86_64_DTPMOD64 ");break;
+                    case R_X86_64_DTPOFF64:printf("R_X86_64_DTPOFF64 ");break;
+                    case R_X86_64_TPOFF64:printf("R_X86_64_TPOFF64 ");break;
+                    case R_X86_64_TLSGD:printf("R_X86_64_TLSGD ");break;
+                    case R_X86_64_TLSLD:printf("R_X86_64_TLSLD ");break;
+                    case R_X86_64_DTPOFF32:printf("R_X86_64_DTPOFF32 ");break;
+                    case R_X86_64_GOTTPOFF:printf("R_X86_64_GOTTPOFF ");break;
+                    case R_X86_64_TPOFF32:printf("R_X86_64_TPOFF32 ");break;
+                    case R_X86_64_PC64:printf("R_X86_64_PC64 ");break;
+                    case R_X86_64_GOTOFF64:printf("R_X86_64_GOTOFF64 ");break;
+                    case R_X86_64_GOTPC32:printf("R_X86_64_GOTPC32 ");break;
+                    case R_X86_64_GOT64:printf("R_X86_64_GOT64 ");break;
+                    case R_X86_64_GOTPCREL64:printf("R_X86_64_GOTPCREL64 ");break;
+                    case R_X86_64_GOTPC64:printf("R_X86_64_GOTPC64 ");break;
+                    case R_X86_64_GOTPLT64:printf("R_X86_64_GOTPLT64 ");break;
+                    case R_X86_64_PLTOFF64:printf("R_X86_64_PLTOFF64 ");break;
+                    case R_X86_64_SIZE32:printf("R_X86_64_SIZE32 ");break;
+                    case R_X86_64_SIZE64:printf("R_X86_64_SIZE64 ");break;
+                    case R_X86_64_GOTPC32_TLSDESC:printf("R_X86_64_GOTPC32_TLSDESC ");break;
+                    case R_X86_64_TLSDESC_CALL:printf("R_X86_64_TLSDESC_CALL ");break;
+                    case R_X86_64_TLSDESC:printf("R_X86_64_TLSDESC ");break;
+                    case R_X86_64_IRELATIVE:printf("R_X86_64_IRELATIVE ");break;
+                    case R_X86_64_RELATIVE64:printf("R_X86_64_RELATIVE64 ");break;
+                    case R_X86_64_GOTPCRELX:printf("R_X86_64_GOTPCRELX ");break;
+                    case R_X86_64_REX_GOTPCRELX:printf("R_X86_64_REX_GOTPCRELX ");break;
+                    case R_X86_64_NUM:printf("R_X86_64_NUM ");break;
                     default:break;
                 }
                     printf("le r_info : %0lx\n",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre.. 
