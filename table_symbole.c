@@ -6,37 +6,65 @@
 #include <stdlib.h>
 #include "converter.h"
 #include "table_relocation_elf.h"
+ 
+void find_name(FILE *f, Elf32_Word index){
+    char* sname="";
+    Elf32_Ehdr ehdr;
+    Elf32_Shdr shdr;
+    Elf32_Sym symbole;
+    fseek(f,0,SEEK_SET);
+    fread(&ehdr,1,sizeof(ehdr),f);
+    ehdr = converthdr(ehdr);
+    fseek(f, convert32(ehdr.e_shoff) + convert16(ehdr.e_shstrndx) * convert16(ehdr.e_shentsize), SEEK_SET);
+    //fseek(f, ehdr.e_shoff + ehdr.e_shstrndx * ehdr.e_shentsize, SEEK_SET);
+    fread(&shdr,1,sizeof(shdr),f);
+    shdr = convertshdr(shdr);
+    for(int i=0;i<=ehdr.e_shnum;i++){
+        fseek(f,convert32(ehdr.e_shoff) + i * sizeof(shdr), SEEK_SET);
+        fread(&shdr,1,sizeof(shdr),f);
+        fread(sname,1,convert32(shdr.sh_size),f);
+        if(convert32(shdr.sh_type) == (Elf32_Word) SHT_STRTAB){
+            sname = convert32(shdr.sh_offset) + index;
+            printf("Symbole : %s",sname);
+        }
+    }
+
+}
+
 
 void table_symbole(FILE * f){
     Elf32_Ehdr ehdr;
     Elf32_Shdr shdr;
     Elf32_Sym symbole;
-    char * section=NULL; 
+
     rewind(f);
     fread(&ehdr, 1, sizeof(ehdr), f);
-    fseek(f, convert32(ehdr.e_shoff) + convert16(ehdr.e_shstrndx) * convert16(ehdr.e_shentsize), SEEK_SET);
+    ehdr = converthdr(ehdr);
+    fseek(f, ehdr.e_shoff + ehdr.e_shstrndx * ehdr.e_shentsize, SEEK_SET);
+    //fseek(f, convert32(ehdr.e_shoff) + convert16(ehdr.e_shstrndx) * convert16(ehdr.e_shentsize), SEEK_SET);
     fread(&shdr,1,sizeof(shdr),f);
-    section = malloc(convert32(shdr.sh_size));
-    fseek(f,convert32(shdr.sh_offset),SEEK_SET);
-    fread(section,1,convert32(shdr.sh_size),f);
+    shdr = convertshdr(shdr);
 
     //char * symbolee = malloc(convert32(shdr.sh_size));
     
     
-    for(int i=0;i<=convert16(ehdr.e_shnum);i++){
-        fseek(f,convert32(ehdr.e_shoff) + i * sizeof(shdr), SEEK_SET);
+    for(int i=0;i<=ehdr.e_shnum;i++){
+        fseek(f,ehdr.e_shoff + i * sizeof(shdr), SEEK_SET);
+        //fseek(f,convert32(ehdr.e_shoff) + i * sizeof(shdr), SEEK_SET);
         fread(&shdr,1,sizeof(shdr),f);
-        if(convert32(shdr.sh_type) == (Elf32_Word) SHT_SYMTAB){
-            printf("La table de symboles .symtab contient %d entrées\n",convert32(shdr.sh_size)/convert32(shdr.sh_entsize));
+        shdr = convertshdr(shdr);
+        if(shdr.sh_type == (Elf32_Word) SHT_SYMTAB){
+            printf("La table de symboles .symtab contient %d entrées\n",shdr.sh_size/shdr.sh_entsize);
             //fseek(f, convert32(shdr.sh_offset) + convert32(shdr.sh_entsize), SEEK_SET);
             //fread(symbolee, 1, convert32(shdr.sh_size), f);
-            for(int j=0;j<convert32(shdr.sh_size)/convert32(shdr.sh_entsize) ;j++){
+            for(int j=0;j<shdr.sh_size/shdr.sh_entsize;j++){
                 //char * symbolename ="";
-                fseek(f,convert32(shdr.sh_offset) + j * convert32(shdr.sh_entsize),SEEK_SET);
+                fseek(f,shdr.sh_offset + j * shdr.sh_entsize,SEEK_SET);
                 //fseek(f,convert32(ehdr.e_shoff) + i * sizeof(shdr), SEEK_SET);
                 fread(&symbole,1,sizeof(symbole),f);
+                symbole = convertsym(symbole);
                 //symbolename = convert32(symbole.st_name) + symbolee;
-                printf("Num:%d    Valeur:%x     Taille:%d     Nom:%0x   NDX:%0d     ",j,convert32(symbole.st_value),convert32(symbole.st_size),convert32(symbole.st_name),convert16(symbole.st_shndx));//symbolename);
+                printf("Num:%d    Valeur:%x     Taille:%d     Nom:%0x   NDX:%0d     ",j,symbole.st_value,symbole.st_size,symbole.st_name,symbole.st_shndx);//symbolename);
                 switch(symbole.st_info & 0xf){
                     case STT_NOTYPE: printf("Type: NOTYPE");break;
                     case STT_OBJECT: printf("Type: OBJECT");break;
@@ -67,10 +95,10 @@ void table_symbole(FILE * f){
                     case STB_LOPROC: printf("   Lien: LOPROC\n");break;
                     case STB_HIPROC: printf("   Lien: HIPROC\n");break;
                 }
+                //find_name(f,convert32(symbole.st_name));
             }
         }
     
     }
-    //return symbole;*/
 }
 

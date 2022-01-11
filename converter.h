@@ -4,7 +4,10 @@
 #include <stdio.h>
 #include <elf.h>
 #include <ctype.h>
-
+Elf32_Ehdr converthdr(Elf32_Ehdr ehdr);
+Elf32_Shdr convertshdr(Elf32_Shdr shdr);
+Elf32_Sym convertsym(Elf32_Sym sym);
+Elf32_Rel convertrel(Elf32_Rel rel);
 //converti un entier sur 4 octets de little endian a big endian
 uint32_t convert32(uint32_t val);
 
