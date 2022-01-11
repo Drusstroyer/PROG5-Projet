@@ -66,36 +66,36 @@ void table_symbole(FILE * f){
                 fread(&symbole,1,sizeof(symbole),f);
                 symbole = convertsym(symbole);
                 //symbolename = convert32(symbole.st_name) + symbolee;
-                printf("Num:%d    Valeur:%x     Taille:%d     Nom:%0x   NDX:%0d     ",j,symbole.st_value,symbole.st_size,symbole.st_name,symbole.st_shndx);//symbolename);
+                printf("Num:%-4d    Valeur:%-6x     Taille:%-4d     Nom:%08x   NDX:%08d     ",j,symbole.st_value,symbole.st_size,symbole.st_name,symbole.st_shndx);//symbolename);
                 switch(symbole.st_info & 0xf){
-                    case STT_NOTYPE: printf("Type: NOTYPE");break;
-                    case STT_OBJECT: printf("Type: OBJECT");break;
+                    case STT_NOTYPE: printf("Type: NOTYPE  ");break;
+                    case STT_OBJECT: printf("Type: OBJECT  ");break;
                     case STT_FUNC: printf("Type: FUNCTION");break;
-                    case STT_SECTION: printf("Type: SECTION");break;
-                    case STT_FILE: printf("Type: FILE");break;
-                    case STT_COMMON: printf("Type: COMMON");break;
-                    case STT_TLS: printf("Type: TLS");break;
-                    case STT_NUM: printf("Type: NUMBER");break;        
-                    case STT_LOOS: printf("Type: LOOS");break;
-                    case STT_HIOS: printf("Type: HIOS");break;
-                    case STT_LOPROC: printf("Type: LOPROC");break;
-                    case STT_HIPROC: printf("Type: HIPROC");break;
+                    case STT_SECTION: printf("Type: SECTION ");break;
+                    case STT_FILE: printf("Type: FILE    ");break;
+                    case STT_COMMON: printf("Type: COMMON  ");break;
+                    case STT_TLS: printf("Type: TLS     ");break;
+                    case STT_NUM: printf("Type: NUMBER  ");break;        
+                    case STT_LOOS: printf("Type: LOOS    ");break;
+                    case STT_HIOS: printf("Type: HIOS    ");break;
+                    case STT_LOPROC: printf("Type: LOPROC  ");break;
+                    case STT_HIPROC: printf("Type: HIPROC  ");break;
                 }
                 switch(symbole.st_other & 0x03){
-                    case STV_DEFAULT: printf("  Visibility: Default");break;
-                    case STV_INTERNAL: printf(" Visibility: Internal");break;
-                    case STV_HIDDEN: printf("   Visibility: Hidden");break;
-                    case STV_PROTECTED: printf("    Visibility: Protected");break;
+                    case STV_DEFAULT: printf(" Visibility: Default   ");break;
+                    case STV_INTERNAL: printf(" Visibility: Internal  ");break;
+                    case STV_HIDDEN: printf(" Visibility: Hidden     ");break;
+                    case STV_PROTECTED: printf(" Visibility: Protected ");break;
                 }
                 switch(symbole.st_info >> 4){
-                    case STB_LOCAL: printf("    Lien: LOCAL\n");break;
-                    case STB_GLOBAL: printf("   Lien: GLOBAL\n");break;
-                    case STB_WEAK: printf("     Lien: WEAK\n");break;
-                    case STB_NUM: printf("      Lien: NUM\n");break;
-                    case STB_LOOS: printf("     Lien: LOOS\n");break;
-                    case STB_HIOS: printf("     Lien: HIOS\n");break;
-                    case STB_LOPROC: printf("   Lien: LOPROC\n");break;
-                    case STB_HIPROC: printf("   Lien: HIPROC\n");break;
+                    case STB_LOCAL: printf("Lien: LOCAL\n");break;
+                    case STB_GLOBAL: printf("Lien: GLOBAL\n");break;
+                    case STB_WEAK: printf("Lien: WEAK\n");break;
+                    case STB_NUM: printf("Lien: NUM\n");break;
+                    case STB_LOOS: printf("Lien: LOOS\n");break;
+                    case STB_HIOS: printf("Lien: HIOS\n");break;
+                    case STB_LOPROC: printf("Lien: LOPROC\n");break;
+                    case STB_HIPROC: printf("Lien: HIPROC\n");break;
                 }
                 //find_name(f,convert32(symbole.st_name));
             }
