@@ -10,8 +10,8 @@
 int main(int argc, char ** argv){
     FILE * f = fopen(argv[1],"rb");
     assert(f != NULL);
-    table_symbole(f);
-    //table_relocation(f);
+    //table_symbole(f);
+    table_relocation(f);
     //assert(symbole != NULL);
     //affiche_symbole(symbole);
 }

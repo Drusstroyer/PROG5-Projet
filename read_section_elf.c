@@ -17,25 +17,26 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
     if(isNumber(m) == 0){
         n = atoi(m);
     }
-
-    fseek(f, convert32(ehdr->e_shoff) + convert16(ehdr->e_shstrndx) * convert16(ehdr->e_shentsize), SEEK_SET);
+    ehdr = convertpointhdr(ehdr);
+    fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
     fread(&shdr, 1, sizeof(shdr), f);
+    shdr = convertshdr(shdr);
 
     //si on passe le nom et pas le numéro
     if( n == 0) {
         
-        char *SectionNames = malloc(convert32(shdr.sh_size));
-        fseek(f, convert32(shdr.sh_offset), SEEK_SET);
-        fread(SectionNames, 1, convert32(shdr.sh_size), f);
+        char *SectionNames = malloc(shdr.sh_size);
+        fseek(f, shdr.sh_offset, SEEK_SET);
+        fread(SectionNames, 1, shdr.sh_size, f);
 
-        char* tabSection[convert16(ehdr->e_shnum) - 1];
+        char* tabSection[ehdr->e_shnum - 1];
 
-        for(int i = 0; i <= convert16(ehdr->e_shnum) - 1; i++){
+        for(int i = 0; i <= ehdr->e_shnum - 1; i++){
             char* Aname = "";
-            fseek(f,convert32(ehdr->e_shoff) + i * sizeof(shdr), SEEK_SET);
+            fseek(f,ehdr->e_shoff + i * sizeof(shdr), SEEK_SET);
             fread(&shdr, 1, sizeof(shdr), f);
-
-            Aname = SectionNames + convert32(shdr.sh_name);
+            shdr = convertshdr(shdr);
+            Aname = SectionNames + shdr.sh_name;
 
             tabSection[i] = Aname;
         }
@@ -44,22 +45,22 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
             
         strcpy(sect, m);
 
-        for(int j = 0; j <= convert16(ehdr->e_shnum) - 1; j++){
+        for(int j = 0; j <= ehdr->e_shnum - 1; j++){
             if (strcmp(tabSection[j], sect) == 0) {
                 n = j;
             }
         }
     }    
 
-    char *SectNames = malloc(convert32(shdr.sh_size));
-    fseek(f, convert32(shdr.sh_offset), SEEK_SET);
-    fread(SectNames, 1, convert32(shdr.sh_size), f);
+    char *SectNames = malloc(shdr.sh_size);
+    fseek(f, shdr.sh_offset, SEEK_SET);
+    fread(SectNames, 1, shdr.sh_size, f);
 
-    fseek(f,convert32(ehdr->e_shoff) + n * sizeof(shdr), SEEK_SET);
+    fseek(f,ehdr->e_shoff + n * sizeof(shdr), SEEK_SET);
     fread(&shdr, 1, sizeof(shdr), f);
-
+    shdr = convertshdr(shdr);
     char* name = "";
-    name = SectNames + convert32(shdr.sh_name);
+    name = SectNames + shdr.sh_name;
 
     char section[MAX];
     char tradASCII[MAX] = "";
@@ -71,7 +72,7 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
     int cmptAddr = 0;  
     printf("  0x%08d", cmptAddr);
 
-    for(int i = convert32(shdr.sh_offset) ; i < convert32(shdr.sh_offset) + convert32(shdr.sh_size) ; i++){
+    for(int i = shdr.sh_offset ; i < shdr.sh_offset + shdr.sh_size ; i++){
         if (cmpt%16 == 0 && cmpt != 0) {                                //retour à la ligne tous les quatre blocs affichés (format du readelf)
         
             printf("  %s", tradASCII);
@@ -83,7 +84,7 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
         if (cmpt%4 == 0) {                                              //espace tous les blocs de 4 affichés (format du readelf)
             printf(" ");
             fseek(f, i, SEEK_SET);
-            fread(section, 1, convert32(shdr.sh_size), f);
+            fread(section, 1, shdr.sh_size, f);
             if (*section == 0) {
                 strcat(tradASCII, ".");
             }
@@ -95,7 +96,7 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
         }
         else {
             fseek(f, i, SEEK_SET);
-            fread(section, 1, convert32(shdr.sh_size), f);
+            fread(section, 1, shdr.sh_size, f);
             if ((int) *section < 33 || (int) *section > 126) {
                 strcat(tradASCII, ".");
             }

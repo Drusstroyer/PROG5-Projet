@@ -1,5 +1,20 @@
 #include "converter.h"
 
+Elf32_Ehdr * convertpointhdr(Elf32_Ehdr *ehdr){
+    ehdr->e_ehsize = convert16(ehdr->e_ehsize);
+    ehdr->e_entry = convert32(ehdr->e_entry);
+    ehdr->e_flags = convert32(ehdr->e_flags);
+    ehdr->e_machine = convert16(ehdr->e_machine);
+    ehdr->e_phentsize = convert16(ehdr->e_phentsize);
+    ehdr->e_phnum = convert16(ehdr->e_phnum);
+    ehdr->e_phoff = convert32(ehdr->e_phoff);
+    ehdr->e_shentsize = convert16(ehdr->e_shentsize);
+    ehdr->e_shnum = convert16(ehdr->e_shnum);
+    ehdr->e_shoff = convert32(ehdr->e_shoff);
+    ehdr->e_shstrndx = convert16(ehdr->e_shstrndx);
+    return ehdr;
+}
+
 Elf32_Ehdr converthdr(Elf32_Ehdr ehdr){
     ehdr.e_ehsize = convert16(ehdr.e_ehsize);
     ehdr.e_entry = convert32(ehdr.e_entry);
