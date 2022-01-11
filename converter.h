@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <elf.h>
+#include <ctype.h>
 
 //converti un entier sur 4 octets de little endian a big endian
 uint32_t convert32(uint32_t val);

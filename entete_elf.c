@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+
 
 #include "entete_elf.h"
 #include "Affiche_entete_elf.h"
@@ -137,11 +137,6 @@ int main(int argc, char *argv[]){
         }
         
     }
-    // else {
-
-    //         elf_print_HDR(header);
-
-    //     }
 
     return 0;
 

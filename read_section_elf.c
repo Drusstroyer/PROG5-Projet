@@ -31,20 +31,18 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
         char* tabSection[convert16(ehdr->e_shnum) - 1];
 
         for(int i = 0; i <= convert16(ehdr->e_shnum) - 1; i++){
-            char* name = "";
+            char* Aname = "";
             fseek(f,convert32(ehdr->e_shoff) + i * sizeof(shdr), SEEK_SET);
             fread(&shdr, 1, sizeof(shdr), f);
 
-            name = SectionNames + convert32(shdr.sh_name);
+            Aname = SectionNames + convert32(shdr.sh_name);
 
-            tabSection[i] = name;
+            tabSection[i] = Aname;
         }
 
-        char * dot = ".";
-        char* sect = malloc(strlen(dot) + strlen(m) + 1);
+        char* sect = malloc(strlen(m) + 1);
             
-        strcpy(sect, dot);
-        strcat(sect, m);
+        strcpy(sect, m);
 
         for(int j = 0; j <= convert16(ehdr->e_shnum) - 1; j++){
             if (strcmp(tabSection[j], sect) == 0) {
@@ -53,12 +51,12 @@ void read_section(FILE * f, Elf32_Ehdr *ehdr, char* m){
         }
     }    
 
-    fseek(f,convert32(ehdr->e_shoff) + n * sizeof(shdr), SEEK_SET);
-    fread(&shdr, 1, sizeof(shdr), f);
-
     char *SectNames = malloc(convert32(shdr.sh_size));
     fseek(f, convert32(shdr.sh_offset), SEEK_SET);
     fread(SectNames, 1, convert32(shdr.sh_size), f);
+
+    fseek(f,convert32(ehdr->e_shoff) + n * sizeof(shdr), SEEK_SET);
+    fread(&shdr, 1, sizeof(shdr), f);
 
     char* name = "";
     name = SectNames + convert32(shdr.sh_name);
