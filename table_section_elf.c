@@ -44,37 +44,40 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
     Elf32_Shdr shdr;
     char flags[7] = "";
 
-    fseek(f, convert32(ehdr->e_shoff) + convert16(ehdr->e_shstrndx) * convert16(ehdr->e_shentsize), SEEK_SET);
+    ehdr = convertpointhdr(ehdr);
+    fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
     fread(&shdr, 1, sizeof(shdr), f);
+    shdr = convertshdr(shdr);
 
     //permet de récupérer le nom de la section
-    char *SectNames = malloc(convert32(shdr.sh_size));
-    fseek(f, convert32(shdr.sh_offset), SEEK_SET);
-    fread(SectNames, 1, convert32(shdr.sh_size), f);
+    char *SectNames = malloc(shdr.sh_size);
+    fseek(f, shdr.sh_offset, SEEK_SET);
+    fread(SectNames, 1, shdr.sh_size, f);
 
 
-    printf("Il y a %d section headers, commençant à l'offset 0x%x:\n\n", convert16(ehdr->e_shnum), convert32(ehdr->e_shoff));
+    printf("Il y a %d section headers, commençant à l'offset 0x%x:\n\n", ehdr->e_shnum, ehdr->e_shoff);
     printf("Section Headers:\n  [Nr] Name                Type             Address "
            "          Offset     Size     EntSize  Flags   "
            "Link  Info Align\n");
 
-    for (int i = 0; i <= convert16(ehdr->e_shnum) - 1; i++) {
+    for (int i = 0; i <= ehdr->e_shnum - 1; i++) {
 
         char* name = "";
         char* type = "";
 
-        fseek(f,convert32(ehdr->e_shoff) + i * sizeof(shdr), SEEK_SET);
+        fseek(f,ehdr->e_shoff + i * sizeof(shdr), SEEK_SET);
         fread(&shdr, 1, sizeof(shdr), f);
+        shdr = convertshdr(shdr);
 
         //nom de la section i
-        name = SectNames + convert32(shdr.sh_name);
+        name = SectNames + shdr.sh_name;
 
         //flags de la section i
-        get_flags(flags, convert32(shdr.sh_flags));
+        get_flags(flags, shdr.sh_flags);
         reverse_str(flags);
         
         //type de la section i
-        switch(convert32(shdr.sh_type)){
+        switch(shdr.sh_type){
             case SHT_PROGBITS: type = "PROGBITS";break;
             case SHT_SYMTAB: type = "SYMTAB";break;
             case SHT_DYNSYM: type = "DYNSYM";break;
@@ -95,8 +98,8 @@ void section_elf(FILE * f, Elf32_Ehdr *ehdr){
 
         //affichage des sections
         printf("  [%2d] %-18s %-17s %016x  0x%08X %08x %08x %-7s %-5d %-3d  %d\n", i, name, type, convert32(shdr.sh_addr), 
-                convert32(shdr.sh_offset), convert32(shdr.sh_size), convert32(shdr.sh_entsize), 
-                flags, convert32(shdr.sh_link), convert32(shdr.sh_info), convert32(shdr.sh_addralign));
+                shdr.sh_offset, shdr.sh_size, shdr.sh_entsize, 
+                flags, shdr.sh_link, shdr.sh_info, shdr.sh_addralign);
     }   
     printf("\n");
     printf("Flags: W (write), A (alloc), X (execute), M (merge), S (strings), I (info), \n L (link order), O (extra OS processing required), G (group), T (TLS), \n C (compressed), x (unknown), o (OS specific), E (exclude),\n (purecode), p (processor specific) \n");
