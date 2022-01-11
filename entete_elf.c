@@ -8,6 +8,8 @@
 #include "Affiche_entete_elf.h"
 #include "table_section_elf.h"
 #include "read_section_elf.h"
+#include "table_symbole.h"
+#include "table_relocation_elf.h"
 #include "converter.h"
 
 Elf32_Ehdr* entete_elf(FILE * f){
@@ -76,6 +78,8 @@ int main(int argc, char *argv[]){
         printf("    -h: Afficher l'en-tête du fichier elf\n");
         printf("    -S: Afficher l'en-tête des sections\n");
         printf("    -x <string>: Afficher le contenu de la section avec le nom <string> en hexadécimal.\n");
+        printf("    -r: Afficher les réadressages (si présents)\n");
+        printf("    -s: Afficher la table des symboles\n");
     }
     
     assert(f != NULL);
@@ -113,6 +117,14 @@ int main(int argc, char *argv[]){
             }
             
             was_a_sec = 1;
+        }else if(strcmp(argv[i],"-r")==0){
+
+                table_relocation(f);
+
+        }else if(strcmp(argv[i],"-s")==0){
+
+                table_symbole(f);
+
         }
         else 
         {

@@ -12,6 +12,7 @@ void table_symbole(FILE * f){
     Elf32_Shdr shdr;
     Elf32_Sym symbole;
     char * section=NULL; 
+    rewind(f);
     fread(&ehdr, 1, sizeof(ehdr), f);
     fseek(f, convert32(ehdr.e_shoff) + convert16(ehdr.e_shstrndx) * convert16(ehdr.e_shentsize), SEEK_SET);
     fread(&shdr,1,sizeof(shdr),f);
@@ -73,11 +74,3 @@ void table_symbole(FILE * f){
     //return symbole;*/
 }
 
-int main(int argc, char ** argv){
-    FILE * f = fopen(argv[1],"rb");
-    assert(f != NULL);
-    //table_symbole(f);
-    table_relocation(f);
-    //assert(symbole != NULL);
-    //affiche_symbole(symbole);
-}

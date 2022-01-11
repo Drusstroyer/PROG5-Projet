@@ -8,6 +8,7 @@ void table_relocation(FILE *f){
     Elf64_Shdr shdr;
     Elf64_Rel relocation;
     //char * section=NULL; 
+    rewind(f);
     fread(&ehdr, 1, sizeof(ehdr), f);
     //fseek(f, convert32(ehdr.e_shoff) + convert16(ehdr.e_shstrndx) * convert16(ehdr.e_shentsize), SEEK_SET);
     fseek(f, ehdr.e_shoff + ehdr.e_shstrndx * ehdr.e_shentsize, SEEK_SET);
@@ -29,14 +30,14 @@ void table_relocation(FILE *f){
                 default:break;
             }
             printf("\nOFFSET : 0x%lx\n",shdr.sh_offset);
-            printf("  Décalage        Info           Type           Val.-symboles Noms-symb.+ Addenda\n");
+            printf("  Décalage        Info           Type\n");
             for(int j=0;j<shdr.sh_size/shdr.sh_entsize;j++){
                 //char * name= "";
                 fseek(f,shdr.sh_offset + j * shdr.sh_entsize,SEEK_SET);
                 fread(&relocation,1,sizeof(relocation),f);
                 //name = SectNames + shdr.
-                printf("00000000%lx ",relocation.r_offset);// le decalage
-                printf("%0lx ",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre..  (le R_INFO)
+                printf("%012lx ",relocation.r_offset);// le decalage
+                printf(" %012lx ",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre..  (le R_INFO)
                 /*switch(ELF64_R_TYPE(relocation.r_info)){ //le type
                 
                     case R_ARM_NONE: printf("R_ARM_NONE\n");break;
@@ -115,7 +116,8 @@ void table_relocation(FILE *f){
                     case R_X86_64_NUM:printf("R_X86_64_NUM ");break;
                     default:break;
                 }
-                    printf("le r_info : %0lx\n",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre.. 
+                    printf("\n");
+                    //printf("le r_info : %0lx\n",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre.. 
 
             } 
         }
