@@ -46,7 +46,7 @@ Elf32_Shdr convertshdr(Elf32_Shdr shdr){
 
 Elf32_Sym convertsym(Elf32_Sym sym){
     sym.st_name = convert32(sym.st_name);
-    sym.st_shndx = convert32(sym.st_shndx);
+    sym.st_shndx = convert16(sym.st_shndx);
     sym.st_size = convert32(sym.st_size);
     sym.st_value = convert32(sym.st_value);
     return sym;
