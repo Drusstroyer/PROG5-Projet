@@ -5,6 +5,8 @@
 #include <elf.h>
 #include <ctype.h>
 Elf32_Ehdr * convertpointhdr(Elf32_Ehdr *ehdr);
+Elf32_Shdr * convertpointshdr(Elf32_Shdr *shdr);
+Elf32_Sym * convertpointsym(Elf32_Sym *sym);
 Elf32_Ehdr converthdr(Elf32_Ehdr ehdr);
 Elf32_Shdr convertshdr(Elf32_Shdr shdr);
 Elf32_Sym convertsym(Elf32_Sym sym);

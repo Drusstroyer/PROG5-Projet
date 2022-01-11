@@ -15,6 +15,29 @@ Elf32_Ehdr * convertpointhdr(Elf32_Ehdr *ehdr){
     return ehdr;
 }
 
+
+Elf32_Shdr * convertpointshdr(Elf32_Shdr *shdr){
+    shdr->sh_addr = convert32(shdr->sh_addr);
+    shdr->sh_addralign = convert32(shdr->sh_addralign);
+    shdr->sh_entsize = convert32(shdr->sh_entsize);
+    shdr->sh_flags = convert32(shdr->sh_flags);
+    shdr->sh_info = convert32(shdr->sh_info);
+    shdr->sh_link = convert32(shdr->sh_link);
+    shdr->sh_name = convert32(shdr->sh_name);
+    shdr->sh_offset = convert32(shdr->sh_offset);
+    shdr->sh_size = convert32(shdr->sh_size);
+    shdr->sh_type = convert32(shdr->sh_type);
+    return shdr;
+}
+
+Elf32_Sym * convertpointsym(Elf32_Sym *sym){
+    sym->st_name = convert32(sym->st_name);
+    sym->st_shndx = convert16(sym->st_shndx);
+    sym->st_size = convert32(sym->st_size);
+    sym->st_value = convert32(sym->st_value);
+    return sym;
+}
+
 Elf32_Ehdr converthdr(Elf32_Ehdr ehdr){
     ehdr.e_ehsize = convert16(ehdr.e_ehsize);
     ehdr.e_entry = convert32(ehdr.e_entry);

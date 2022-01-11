@@ -62,7 +62,7 @@ int main(int argc, char *argv[]){
     if (argc > 1){
 
         if(argv[argc-1] != NULL){
-
+            
             f = fopen(argv[argc-1],"rb");
 
         }
@@ -83,7 +83,9 @@ int main(int argc, char *argv[]){
     }
     
     assert(f != NULL);
-
+    char buf[1048576];
+    fread(buf,sizeof buf,1,f);
+    
     Elf32_Ehdr* header = entete_elf(f);
 
     assert(header != NULL);
@@ -123,7 +125,8 @@ int main(int argc, char *argv[]){
 
         }else if(strcmp(argv[i],"-s")==0){
 
-                table_symbole(f);
+                image_load(buf,sizeof(buf));
+                //table_symbole(f);//AVANT
 
         }
         else 

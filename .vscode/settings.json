@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "affiche_entete_elf.h": "c",
-        "read_section_elf.h": "c"
+        "read_section_elf.h": "c",
+        "elf.h": "c"
     }
 }
