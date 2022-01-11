@@ -12,6 +12,8 @@ void find_name(FILE *f, Elf32_Word index){
     Elf32_Ehdr ehdr;
     Elf32_Shdr shdr;
     Elf32_Sym symbole;
+    
+
     fseek(f,0,SEEK_SET);
     fread(&ehdr,1,sizeof(ehdr),f);
     ehdr = converthdr(ehdr);
