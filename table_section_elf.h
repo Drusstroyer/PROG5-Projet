@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <elf.h>
 
-void section_elf(FILE * f, Elf32_Ehdr *ehdr);
+void section_elf(FILE * f, Elf32_Ehdr *ehdr, int rel);
 
 //Fonction permettant de trouver tous les flags d'une section
 void get_flags(char *flag, int val);

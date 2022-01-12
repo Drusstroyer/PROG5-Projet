@@ -87,7 +87,7 @@ int main(int argc, char *argv[]){
         printf("Usage: ./read-elf <option> fichier ELF\n");
         printf(" Afficher les informations à propos du contenu du format des fichiers ELF\n Les options sont :\n");
         printf("    -h: Afficher l'en-tête du fichier elf\n");
-        printf("    -S: Afficher l'en-tête des sections\n");
+        printf("    -S : Afficher l'en-tête des sections\n -S -rel vous permet d'afficher les sections sans les relocations");
         printf("    -x <string>: Afficher le contenu de la section avec le nom <string> en hexadécimal.\n");
         printf("    -r: Afficher les réadressages (si présents)\n");
         printf("    -s: Afficher la table des symboles\n");
@@ -115,15 +115,27 @@ int main(int argc, char *argv[]){
             }
         }
         else if(strcmp(argv[i],"-S")==0){
-            if(check_version32(buf,sizeof buf) == 0){
-                section_elf(f, header);
-                was_a_sec=1;
-            }
+            if(strcmp(argv[i+1],"-rel")==0){
+                if(check_version32(buf,sizeof buf) == 0){
+                    section_elf(f, header,1);
+                    was_a_sec=1;
+                }
+                else {
+                    printf("On ne peut pas traiter un fichier en 64 bit...\n");
+                    return -1;
+                }
+            }    
             else {
-                printf("On ne peut pas traiter un fichier en 64 bit...\n");
-                return -1;
+                if(check_version32(buf,sizeof buf) == 0){
+                    section_elf(f, header,0);
+                    was_a_sec=1;
+                }
+                else {
+                    printf("On ne peut pas traiter un fichier en 64 bit...\n");
+                    return -1;
+                }
             }
-
+            
         }
         else if(strcmp(argv[i],"-x")==0){
             
