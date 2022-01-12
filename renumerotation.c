@@ -3,65 +3,46 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-
 #include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 int main (int argc, char *argv[]) {
-    int fdin, fdout;
+
+    FILE *fdin, *fdout;
     char *src, *dst;
-    struct stat statbuf;
-    int mode = 0x0777;
-    
-    // if (argc != 3)
-    // err_quit ("usage: a.out <fromfile> <tofile>");
+    int size;
 
-    /* open the input file */
-    if ((fdin = open (argv[1], O_RDONLY)) < 0) {
-        printf("can't open %s for reading", argv[1]);
-        return 0;
-    }
+    /* Ouvrir le fichier à copier */
+    fdin = fopen(argv[1], "rb");
+    assert(fdin != NULL);
 
-    /* open/create the output file */
-    if ((fdout = open(argv[2], O_RDWR | O_CREAT | O_TRUNC, mode )) < 0) {    //edited here 
-        printf("can't create %s for writing", argv[2]);
-        return 0;
-    }
+    /* Créer la copie */
+    fdout = fopen(argv[2],"w");
+    assert(fdout != NULL);
 
-    /* find size of input file */
-    if (fstat (fdin,&statbuf) < 0) {
-        printf ("fstat error \n");
-        return 0;
-    }
+    /* Récupérer la taille du fichier à copier (pour mmap) */
+    fseek(fdin, 0, SEEK_END);
+    size = ftell(fdin);
+    fseek(fdin,0,SEEK_END);
+    printf("%d \n",size);
 
-    /* go to the location corresponding to the last byte */
-    if (lseek (fdout, statbuf.st_size - 1, SEEK_SET) == -1) {
-        printf ("lseek error \n");
-        return 0;
-    }
+    /* Aller au dernier bit de la copie */
+    fseek(fdout,size-1,SEEK_SET);
 
-    /* write a dummy byte at the last location */
-    if (write (fdout, "", 1) != 1) {
-        printf ("write error \n");
-        return 0;
-    }
+    /* Ecrire un bit d'initialisation */
+    char* c = "";
+    fwrite(c, sizeof(char*), 1, fdout);
 
-    /* mmap the input file */
-    if ((src = mmap (0, statbuf.st_size, PROT_READ, MAP_SHARED, fdin, 0)) == (caddr_t) -1) {
-        printf ("mmap error for input \n");
-        return 0;
-    }
+    /* mmap du fichier à copier */
+    src = mmap(0, size, PROT_READ, MAP_SHARED, 0, 0);
 
-    /* mmap the output file */
-    if ((dst = mmap (0, statbuf.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fdout, 0)) == (caddr_t) -1) {
-        printf ("mmap error for output \n");
-        return 0;
-    }
+    /* mmap de la copie */
+    dst = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, 0, 0);
 
-    /* this copies the input file to the output file */
-    memcpy (dst, src, statbuf.st_size);
+    /* copie mémoire d'un fichier vers l'autre */
+    memcpy(dst, src, size);
+
+    fclose(fdin);
+    fclose(fdout);
 
     return 0;
 
