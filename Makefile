@@ -1,14 +1,11 @@
 CC=gcc
 CFLAGS=-Wall -g
-progs=read_elf test_symbole
+progs=read_elf
 
 all: $(progs)
 
 read_elf: Affiche_entete_elf.o entete_elf.o table_section_elf.o converter.o read_section_elf.o table_symbole.o Affiche_symbole.o table_relocation_elf.o 
 	$(CC) -o $@ $^ 
-
-test_symbole: Test_Symbole.o table_symbole.o Affiche_symbole.o converter.o table_relocation_elf.o 
-	$(CC) -o $@ $^
 
 Affiche_entete_elf.o: Affiche_entete_elf.c Affiche_entete_elf.h
 	$(CC) -c $(CFLAGS) $<
@@ -34,8 +31,6 @@ converter.o: converter.c converter.h
 table_relocation_elf.o: table_relocation_elf.c table_relocation_elf.h
 	$(CC) -c $(CFLAGS) $<
 
-Test_Symbole.o : Test_Symbole.c table_symbole.c table_symbole.h Affiche_symbole.h
-	$(CC) -c $(CFLAGS) $<
 		
 clean: 
 	rm -r -f $(progs) *.o *.txt

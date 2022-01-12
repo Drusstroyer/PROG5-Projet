@@ -1,5 +1,4 @@
 #include "table_symbole.h"
-#include "Affiche_symbole.h"
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
