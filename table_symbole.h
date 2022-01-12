@@ -3,5 +3,5 @@
 #include <elf.h>
 #include <stdio.h>
 #include <stdlib.h>
-void image_load(char *elf_start, unsigned int taille);
+void table_symbole(char *elf_start, unsigned int taille);
 #endif

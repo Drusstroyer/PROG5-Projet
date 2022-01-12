@@ -2,8 +2,224 @@
 #include <stdlib.h>
 #include <elf.h>
 #include "converter.h"
+#include <sys/mman.h>
+#include <stdio.h>
+#include <string.h>
 
-void table_relocation(FILE *f){
+void table_relocation(char *elf_start, unsigned int taille){
+    Elf64_Ehdr      *hdr     = NULL;
+    Elf64_Phdr      *phdr    = NULL;
+    Elf64_Shdr      *shdr    = NULL;
+    Elf64_Sym       *syms    = NULL;
+    Elf64_Shdr* reltab = NULL;
+    Elf64_Shdr* symtab=NULL;
+    Elf64_Shdr* strtab=NULL;
+    Elf64_Rel *rel = NULL;
+    Elf64_Rela *rela = NULL;
+    int size = 0;
+    int i = 0;
+    char* exec = mmap(NULL, taille, PROT_READ | PROT_WRITE | PROT_EXEC,
+                      MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+    //memset(exec,0x0,taille);
+    hdr = (Elf64_Ehdr *) elf_start;
+    //hdr = convertpointhdr(hdr);
+
+    shdr = (Elf64_Shdr *) (elf_start + hdr->e_shoff);
+    char *str = (char *) (elf_start + shdr[hdr->e_shstrndx].sh_offset);
+    for(int i=0;i< hdr->e_shnum;i++){
+        if (strcmp(&str[shdr[i].sh_name], ".symtab") == 0){
+         	symtab = (Elf64_Shdr *) &shdr[i]; 
+        }
+        if (strcmp(&str[shdr[i].sh_name], ".dynstr") == 0){
+         	strtab = (Elf64_Shdr *) &shdr[i]; 
+        }      
+    }
+    //Elf64_Sym *sym = (Elf64_Sym*) (elf_start + symtab->sh_offset);
+    str = (char*) (elf_start + strtab->sh_offset);
+    for(int i=0;i< hdr->e_shnum;i++){
+        if (shdr[i].sh_type == (Elf64_Word) SHT_RELA){
+            reltab = (Elf64_Shdr *) &shdr[i];
+            rela = (Elf64_Rela *) (elf_start + reltab->sh_offset);
+            Elf64_Sym *sym = (Elf64_Sym*) (elf_start + symtab->sh_offset);
+            for(int j=0;j<reltab->sh_size / reltab->sh_entsize;j++){
+                printf("%012lx ",rela[j].r_offset);// le decalage
+                printf(" %012lx ",rela[j].r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre..  (le R_INFO)
+                    /*switch(ELF64_R_TYPE(relocation.r_info)){ //le type
+                    
+                        case R_ARM_NONE: printf("R_ARM_NONE\n");break;
+                        case R_ARM_PC24: printf("R_ARM_PC24\n");break;
+                        case R_ARM_ABS32:printf("R_ARM_ABS32\n");break;
+                        case R_ARM_REL32:printf("R_ARM_REL32\n");break;
+                        case R_ARM_PC13:printf("R_ARM_PC13\n");break;
+                        case R_ARM_ABS16:printf("R_ARM_ABS16\n");break;
+                        case R_ARM_ABS12:printf("R_ARM_ABS12\n");break;
+                        case R_ARM_THM_ABS5:printf("R_ARM_THM_ABS5\n");break;
+                        case R_ARM_ABS8:printf("R_ARM_ABS8\n");break;
+                        case R_ARM_SBREL32:printf("R_ARM_SBREL32\n");break;
+                        case R_ARM_THM_PC22:printf("R_ARM_THM_PC22\n");break;
+                        case R_ARM_THM_PC8:printf("R_ARM_THM_PC8\n");break;
+                        case R_ARM_AMP_VCALL9:printf("R_ARM_AMP_VCALL9\n");break;
+                        case R_ARM_SWI24:printf("R_ARM_SWI24\n");break;
+                        case R_ARM_THM_SWI8:printf("R_ARM_THM_SWI8\n");break;
+                        case R_ARM_XPC25:printf("R_ARM_XPC25\n");break;
+                        case R_ARM_THM_XPC22:printf("R_ARM_THM_XPC22\n");break;
+                        case R_ARM_TLS_DTPMOD32:printf("R_ARM_TLS_DTPMOD32\n");break;
+                        case R_ARM_TLS_DTPOFF32:printf("R_ARM_TLS_DTPOFF32\n");break;
+                        case R_ARM_TLS_TPOFF32:printf("R_ARM_TLS_TPOFF32\n");break;
+                        case R_ARM_COPY:printf("R_ARM_COPY\n");break;
+                        case R_ARM_GLOB_DAT:printf("R_ARM_GLOB_DAT\n");break;
+                        case R_ARM_JUMP_SLOT:printf("R_ARM_JUMP_SLOT\n");break;
+                        case R_ARM_RELATIVE:printf("R_ARM_RELATIVE\n");break;
+                        case R_ARM_GOTOFF:printf("R_ARM_GOTOFF\n");break;
+                        case R_ARM_GOTPC:printf("R_ARM_GOTPC\n");break;
+                        case R_ARM_GOT32:printf("R_ARM_GOT32\n");break;
+                        case R_ARM_PLT32:printf("R_ARM_PLT32\n");break;
+                        case R_ARM_CALL:printf("R_ARM_CALL\n");break;
+                        case R_ARM_JUMP24:printf("R_ARM_JUMP24\n");break;
+                    }*/
+                    switch(ELF64_R_TYPE(rela[j].r_info)){ //JUSTE POUR L'AFFICHAGE QUE TU TESTE QUE CA RENDENT BIEN
+                        case R_X86_64_NONE:printf("R_X86_64_NONE ");break;
+                        case R_X86_64_64:printf("R_X86_64_64 ");break;
+                        case R_X86_64_PC32:printf("R_X86_64_PC32 ");break;
+                        case R_X86_64_GOT32:printf("R_X86_64_GOT32 ");break;
+                        case R_X86_64_PLT32:printf("R_X86_64_PLT32 ");break;
+                        case R_X86_64_COPY:printf("R_X86_64_COPY ");break;
+                        case R_X86_64_GLOB_DAT:printf("R_X86_64_GLOB_DAT ");break;
+                        case R_X86_64_JUMP_SLOT:printf("R_X86_64_JUMP_SLOT ");break;
+                        case R_X86_64_RELATIVE:printf("R_X86_64_RELATIVE ");break;
+                        case R_X86_64_GOTPCREL:printf("R_X86_64_GOTPCREL ");break;
+                        case R_X86_64_32:printf("R_X86_64_32 ");break;
+                        case R_X86_64_32S:printf("R_X86_64_32S ");break;
+                        case R_X86_64_16:printf("R_X86_64_16 ");break;
+                        case R_X86_64_PC16:printf("R_X86_64_PC16 ");break;
+                        case R_X86_64_8:printf("R_X86_64_8 ");break;
+                        case R_X86_64_PC8:printf("R_X86_64_PC8 ");break;
+                        case R_X86_64_DTPMOD64:printf("R_X86_64_DTPMOD64 ");break;
+                        case R_X86_64_DTPOFF64:printf("R_X86_64_DTPOFF64 ");break;
+                        case R_X86_64_TPOFF64:printf("R_X86_64_TPOFF64 ");break;
+                        case R_X86_64_TLSGD:printf("R_X86_64_TLSGD ");break;
+                        case R_X86_64_TLSLD:printf("R_X86_64_TLSLD ");break;
+                        case R_X86_64_DTPOFF32:printf("R_X86_64_DTPOFF32 ");break;
+                        case R_X86_64_GOTTPOFF:printf("R_X86_64_GOTTPOFF ");break;
+                        case R_X86_64_TPOFF32:printf("R_X86_64_TPOFF32 ");break;
+                        case R_X86_64_PC64:printf("R_X86_64_PC64 ");break;
+                        case R_X86_64_GOTOFF64:printf("R_X86_64_GOTOFF64 ");break;
+                        case R_X86_64_GOTPC32:printf("R_X86_64_GOTPC32 ");break;
+                        case R_X86_64_GOT64:printf("R_X86_64_GOT64 ");break;
+                        case R_X86_64_GOTPCREL64:printf("R_X86_64_GOTPCREL64 ");break;
+                        case R_X86_64_GOTPC64:printf("R_X86_64_GOTPC64 ");break;
+                        case R_X86_64_GOTPLT64:printf("R_X86_64_GOTPLT64 ");break;
+                        case R_X86_64_PLTOFF64:printf("R_X86_64_PLTOFF64 ");break;
+                        case R_X86_64_SIZE32:printf("R_X86_64_SIZE32 ");break;
+                        case R_X86_64_SIZE64:printf("R_X86_64_SIZE64 ");break;
+                        case R_X86_64_GOTPC32_TLSDESC:printf("R_X86_64_GOTPC32_TLSDESC ");break;
+                        case R_X86_64_TLSDESC_CALL:printf("R_X86_64_TLSDESC_CALL ");break;
+                        case R_X86_64_TLSDESC:printf("R_X86_64_TLSDESC ");break;
+                        case R_X86_64_IRELATIVE:printf("R_X86_64_IRELATIVE ");break;
+                        case R_X86_64_RELATIVE64:printf("R_X86_64_RELATIVE64 ");break;
+                        case R_X86_64_GOTPCRELX:printf("R_X86_64_GOTPCRELX ");break;
+                        case R_X86_64_REX_GOTPCRELX:printf("R_X86_64_REX_GOTPCRELX ");break;
+                        case R_X86_64_NUM:printf("R_X86_64_NUM ");break;
+                        default:break;
+                    }printf("\n");
+                    //printf("   %08s\n", str + symtab->sh_offset + ELF64_R_SYM(rela[j].r_info)); //*  sym[j].st_name);
+                    //printf("%08x\n", rela[j].r_info);
+            }printf("\n");
+        } 
+    }
+
+    /*for(int i=0;i <size;i++){
+        rela = (Elf64_Rela*) (elf_start + reltab[i]->sh_offset);
+        for (size_t j = 0; j < reltab[i]->sh_size / reltab[i]->sh_entsize; i++) {
+            printf("%012lx ",rela[j].r_offset);// le decalage
+                    printf(" %012lx ",rela[j].r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre..  (le R_INFO)*/
+                    /*switch(ELF64_R_TYPE(relocation.r_info)){ //le type
+                    
+                        case R_ARM_NONE: printf("R_ARM_NONE\n");break;
+                        case R_ARM_PC24: printf("R_ARM_PC24\n");break;
+                        case R_ARM_ABS32:printf("R_ARM_ABS32\n");break;
+                        case R_ARM_REL32:printf("R_ARM_REL32\n");break;
+                        case R_ARM_PC13:printf("R_ARM_PC13\n");break;
+                        case R_ARM_ABS16:printf("R_ARM_ABS16\n");break;
+                        case R_ARM_ABS12:printf("R_ARM_ABS12\n");break;
+                        case R_ARM_THM_ABS5:printf("R_ARM_THM_ABS5\n");break;
+                        case R_ARM_ABS8:printf("R_ARM_ABS8\n");break;
+                        case R_ARM_SBREL32:printf("R_ARM_SBREL32\n");break;
+                        case R_ARM_THM_PC22:printf("R_ARM_THM_PC22\n");break;
+                        case R_ARM_THM_PC8:printf("R_ARM_THM_PC8\n");break;
+                        case R_ARM_AMP_VCALL9:printf("R_ARM_AMP_VCALL9\n");break;
+                        case R_ARM_SWI24:printf("R_ARM_SWI24\n");break;
+                        case R_ARM_THM_SWI8:printf("R_ARM_THM_SWI8\n");break;
+                        case R_ARM_XPC25:printf("R_ARM_XPC25\n");break;
+                        case R_ARM_THM_XPC22:printf("R_ARM_THM_XPC22\n");break;
+                        case R_ARM_TLS_DTPMOD32:printf("R_ARM_TLS_DTPMOD32\n");break;
+                        case R_ARM_TLS_DTPOFF32:printf("R_ARM_TLS_DTPOFF32\n");break;
+                        case R_ARM_TLS_TPOFF32:printf("R_ARM_TLS_TPOFF32\n");break;
+                        case R_ARM_COPY:printf("R_ARM_COPY\n");break;
+                        case R_ARM_GLOB_DAT:printf("R_ARM_GLOB_DAT\n");break;
+                        case R_ARM_JUMP_SLOT:printf("R_ARM_JUMP_SLOT\n");break;
+                        case R_ARM_RELATIVE:printf("R_ARM_RELATIVE\n");break;
+                        case R_ARM_GOTOFF:printf("R_ARM_GOTOFF\n");break;
+                        case R_ARM_GOTPC:printf("R_ARM_GOTPC\n");break;
+                        case R_ARM_GOT32:printf("R_ARM_GOT32\n");break;
+                        case R_ARM_PLT32:printf("R_ARM_PLT32\n");break;
+                        case R_ARM_CALL:printf("R_ARM_CALL\n");break;
+                        case R_ARM_JUMP24:printf("R_ARM_JUMP24\n");break;
+                    }*/
+                    /*switch(ELF64_R_TYPE(rela[j].r_info)){ //JUSTE POUR L'AFFICHAGE QUE TU TESTE QUE CA RENDENT BIEN
+                        case R_X86_64_NONE:printf("R_X86_64_NONE ");break;
+                        case R_X86_64_64:printf("R_X86_64_64 ");break;
+                        case R_X86_64_PC32:printf("R_X86_64_PC32 ");break;
+                        case R_X86_64_GOT32:printf("R_X86_64_GOT32 ");break;
+                        case R_X86_64_PLT32:printf("R_X86_64_PLT32 ");break;
+                        case R_X86_64_COPY:printf("R_X86_64_COPY ");break;
+                        case R_X86_64_GLOB_DAT:printf("R_X86_64_GLOB_DAT ");break;
+                        case R_X86_64_JUMP_SLOT:printf("R_X86_64_JUMP_SLOT ");break;
+                        case R_X86_64_RELATIVE:printf("R_X86_64_RELATIVE ");break;
+                        case R_X86_64_GOTPCREL:printf("R_X86_64_GOTPCREL ");break;
+                        case R_X86_64_32:printf("R_X86_64_32 ");break;
+                        case R_X86_64_32S:printf("R_X86_64_32S ");break;
+                        case R_X86_64_16:printf("R_X86_64_16 ");break;
+                        case R_X86_64_PC16:printf("R_X86_64_PC16 ");break;
+                        case R_X86_64_8:printf("R_X86_64_8 ");break;
+                        case R_X86_64_PC8:printf("R_X86_64_PC8 ");break;
+                        case R_X86_64_DTPMOD64:printf("R_X86_64_DTPMOD64 ");break;
+                        case R_X86_64_DTPOFF64:printf("R_X86_64_DTPOFF64 ");break;
+                        case R_X86_64_TPOFF64:printf("R_X86_64_TPOFF64 ");break;
+                        case R_X86_64_TLSGD:printf("R_X86_64_TLSGD ");break;
+                        case R_X86_64_TLSLD:printf("R_X86_64_TLSLD ");break;
+                        case R_X86_64_DTPOFF32:printf("R_X86_64_DTPOFF32 ");break;
+                        case R_X86_64_GOTTPOFF:printf("R_X86_64_GOTTPOFF ");break;
+                        case R_X86_64_TPOFF32:printf("R_X86_64_TPOFF32 ");break;
+                        case R_X86_64_PC64:printf("R_X86_64_PC64 ");break;
+                        case R_X86_64_GOTOFF64:printf("R_X86_64_GOTOFF64 ");break;
+                        case R_X86_64_GOTPC32:printf("R_X86_64_GOTPC32 ");break;
+                        case R_X86_64_GOT64:printf("R_X86_64_GOT64 ");break;
+                        case R_X86_64_GOTPCREL64:printf("R_X86_64_GOTPCREL64 ");break;
+                        case R_X86_64_GOTPC64:printf("R_X86_64_GOTPC64 ");break;
+                        case R_X86_64_GOTPLT64:printf("R_X86_64_GOTPLT64 ");break;
+                        case R_X86_64_PLTOFF64:printf("R_X86_64_PLTOFF64 ");break;
+                        case R_X86_64_SIZE32:printf("R_X86_64_SIZE32 ");break;
+                        case R_X86_64_SIZE64:printf("R_X86_64_SIZE64 ");break;
+                        case R_X86_64_GOTPC32_TLSDESC:printf("R_X86_64_GOTPC32_TLSDESC ");break;
+                        case R_X86_64_TLSDESC_CALL:printf("R_X86_64_TLSDESC_CALL ");break;
+                        case R_X86_64_TLSDESC:printf("R_X86_64_TLSDESC ");break;
+                        case R_X86_64_IRELATIVE:printf("R_X86_64_IRELATIVE ");break;
+                        case R_X86_64_RELATIVE64:printf("R_X86_64_RELATIVE64 ");break;
+                        case R_X86_64_GOTPCRELX:printf("R_X86_64_GOTPCRELX ");break;
+                        case R_X86_64_REX_GOTPCRELX:printf("R_X86_64_REX_GOTPCRELX ");break;
+                        case R_X86_64_NUM:printf("R_X86_64_NUM ");break;
+                        default:break;
+                    }
+                        printf("\n");
+            printf("    Nom:%08s\n", str + convert32(sym[j].st_name));
+        //printf("Taille:%-4d   name %d : %s\n",convert32(sym[i].st_size),i, (char *) str + convert32(sym[i].st_name));
+        }
+    }*/
+}
+
+
+/*void table_relocation(FILE *f){
     Elf64_Ehdr ehdr;
     Elf64_Shdr shdr;
     Elf64_Rel relocation;
@@ -38,7 +254,7 @@ void table_relocation(FILE *f){
                 //name = SectNames + shdr.
                 printf("%012lx ",relocation.r_offset);// le decalage
                 printf(" %012lx ",relocation.r_info); //il faudrait pouvoir afficher des 0000 comme pour readelf ce serait propre..  (le R_INFO)
-                /*switch(ELF64_R_TYPE(relocation.r_info)){ //le type
+                switch(ELF64_R_TYPE(relocation.r_info)){ //le type
                 
                     case R_ARM_NONE: printf("R_ARM_NONE\n");break;
                     case R_ARM_PC24: printf("R_ARM_PC24\n");break;
@@ -70,7 +286,9 @@ void table_relocation(FILE *f){
                     case R_ARM_PLT32:printf("R_ARM_PLT32\n");break;
                     case R_ARM_CALL:printf("R_ARM_CALL\n");break;
                     case R_ARM_JUMP24:printf("R_ARM_JUMP24\n");break;
-                }*/
+                }
+                */
+               /*
                 switch(ELF64_R_TYPE(relocation.r_info)){ //JUSTE POUR L'AFFICHAGE QUE TU TESTE QUE CA RENDENT BIEN
                     case R_X86_64_NONE:printf("R_X86_64_NONE ");break;
                     case R_X86_64_64:printf("R_X86_64_64 ");break;
@@ -122,4 +340,4 @@ void table_relocation(FILE *f){
             } 
         }
     }
-}
+}*/

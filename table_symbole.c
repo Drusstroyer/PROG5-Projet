@@ -8,7 +8,7 @@
 #include "table_relocation_elf.h"
 #include <sys/mman.h>
  
-void image_load(char *elf_start, unsigned int taille){
+void table_symbole(char *elf_start, unsigned int taille){
     Elf32_Ehdr      *hdr     = NULL;
     Elf32_Phdr      *phdr    = NULL;
     Elf32_Shdr      *shdr    = NULL;
