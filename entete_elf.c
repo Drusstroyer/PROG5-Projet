@@ -107,6 +107,7 @@ int main(int argc, char *argv[]){
 
         if(strcmp(argv[i],"-h")==0){
 
+<<<<<<< HEAD
             if(check_version32(buf,sizeof buf) == 0){
                 elf_print_HDR(header);
             }else{
@@ -122,6 +123,16 @@ int main(int argc, char *argv[]){
                 return -1;
             }
 
+=======
+            elf_print_HDR(header);
+            was_a_sec = 1;
+
+        }
+        else if(strcmp(argv[i],"-S")==0){
+
+            section_elf(f, header);
+            was_a_sec = 1;
+>>>>>>> 7f254eb213c32a8e0736088511e7ade27dc87a14
         }
         else if(strcmp(argv[i],"-x")==0){
             
@@ -145,21 +156,30 @@ int main(int argc, char *argv[]){
             was_a_sec = 1;
         }else if(strcmp(argv[i],"-r")==0){
 
+<<<<<<< HEAD
             if(check_version32(buf,sizeof buf) == 0)
                 table_relocation32(buf,sizeof(buf));
             else {
                 table_relocation64(buf,sizeof buf);
             }
+=======
+                table_relocation64(buf,sizeof(buf));
+                was_a_sec = 1;
+>>>>>>> 7f254eb213c32a8e0736088511e7ade27dc87a14
 
         }else if(strcmp(argv[i],"-s")==0){
 
             if(check_version32(buf,sizeof buf) ==0 )
                 table_symbole(buf,sizeof(buf));
+<<<<<<< HEAD
             else {
                 printf("On ne peut pas traiter un fichier en 64 bit...\n");
                 return -1;
             }
 
+=======
+                was_a_sec = 1;
+>>>>>>> 7f254eb213c32a8e0736088511e7ade27dc87a14
         }
         else 
         {
