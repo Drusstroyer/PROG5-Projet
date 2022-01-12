@@ -97,12 +97,13 @@ int main(int argc, char *argv[]){
         if(strcmp(argv[i],"-h")==0){
 
             elf_print_HDR(header);
+            was_a_sec = 1;
 
         }
         else if(strcmp(argv[i],"-S")==0){
 
             section_elf(f, header);
-
+            was_a_sec = 1;
         }
         else if(strcmp(argv[i],"-x")==0){
             
@@ -122,11 +123,12 @@ int main(int argc, char *argv[]){
         }else if(strcmp(argv[i],"-r")==0){
 
                 table_relocation64(buf,sizeof(buf));
+                was_a_sec = 1;
 
         }else if(strcmp(argv[i],"-s")==0){
 
                 table_symbole(buf,sizeof(buf));
-
+                was_a_sec = 1;
         }
         else 
         {
