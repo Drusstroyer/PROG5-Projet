@@ -121,12 +121,11 @@ int main(int argc, char *argv[]){
             was_a_sec = 1;
         }else if(strcmp(argv[i],"-r")==0){
 
-                table_relocation(f);
+                table_relocation(buf,sizeof(buf));
 
         }else if(strcmp(argv[i],"-s")==0){
 
-                image_load(buf,sizeof(buf));
-                //table_symbole(f);//AVANT
+                table_symbole(buf,sizeof(buf));
 
         }
         else 
