@@ -26,7 +26,7 @@ void table_relocation32(char *elf_start, unsigned int taille){
         if (strcmp(&str[convert32(shdr[i].sh_name)], ".symtab") == 0){
          	symtab = (Elf32_Shdr *) &shdr[i]; 
         }
-        if (strcmp(&str[convert32(shdr[i].sh_name)], ".dynstr") == 0){
+        if (strcmp(&str[convert32(shdr[i].sh_name)], ".strtab") == 0){
          	strtab = (Elf32_Shdr *) &shdr[i]; 
         }
         if (convert32(shdr[i].sh_type) == (Elf32_Word) SHT_RELA){
@@ -40,7 +40,51 @@ void table_relocation32(char *elf_start, unsigned int taille){
         printf("Il n'y a pas de réadressages dans ce fichier.\n");
         return;
     }
-    for(int i=0;i< convert32(hdr->e_shnum);i++){
+    Elf32_Sym *sym = (Elf32_Sym*) (elf_start + convert32(symtab->sh_offset));
+    str = (char*) (elf_start + convert32(strtab->sh_offset));
+    for(int i=0;i< convert16(hdr->e_shnum);i++){
+        if (convert32(shdr[i].sh_type) == (Elf32_Word) SHT_REL){
+            reltab = (Elf32_Shdr *) &shdr[i];
+            rel = (Elf32_Rel *) (elf_start + convert32(reltab->sh_offset));
+            for(int j=0;j<convert32(reltab->sh_size) / convert32(reltab->sh_entsize);j++){
+                printf("%012x ",convert32(rel[j].r_offset));// le decalage
+                printf(" %012x ",convert32(rel[j].r_info)); 
+                    switch(ELF32_R_TYPE(convert32(rel[j].r_info))){ //le type
+                    
+                        case R_ARM_NONE: printf("R_ARM_NONE");break;
+                        case R_ARM_PC24: printf("R_ARM_PC24");break;
+                        case R_ARM_ABS32:printf("R_ARM_ABS32");break;
+                        case R_ARM_REL32:printf("R_ARM_REL32");break;
+                        case R_ARM_PC13:printf("R_ARM_PC13");break;
+                        case R_ARM_ABS16:printf("R_ARM_ABS16");break;
+                        case R_ARM_ABS12:printf("R_ARM_ABS12");break;
+                        case R_ARM_THM_ABS5:printf("R_ARM_THM_ABS5");break;
+                        case R_ARM_ABS8:printf("R_ARM_ABS8");break;
+                        case R_ARM_SBREL32:printf("R_ARM_SBREL32");break;
+                        case R_ARM_THM_PC22:printf("R_ARM_THM_PC22");break;
+                        case R_ARM_THM_PC8:printf("R_ARM_THM_PC8");break;
+                        case R_ARM_AMP_VCALL9:printf("R_ARM_AMP_VCALL9");break;
+                        case R_ARM_SWI24:printf("R_ARM_SWI24");break;
+                        case R_ARM_THM_SWI8:printf("R_ARM_THM_SWI8");break;
+                        case R_ARM_XPC25:printf("R_ARM_XPC25");break;
+                        case R_ARM_THM_XPC22:printf("R_ARM_THM_XPC22");break;
+                        case R_ARM_TLS_DTPMOD32:printf("R_ARM_TLS_DTPMOD32");break;
+                        case R_ARM_TLS_DTPOFF32:printf("R_ARM_TLS_DTPOFF32");break;
+                        case R_ARM_TLS_TPOFF32:printf("R_ARM_TLS_TPOFF32");break;
+                        case R_ARM_COPY:printf("R_ARM_COPY");break;
+                        case R_ARM_GLOB_DAT:printf("R_ARM_GLOB_DAT");break;
+                        case R_ARM_JUMP_SLOT:printf("R_ARM_JUMP_SLOT");break;
+                        case R_ARM_RELATIVE:printf("R_ARM_RELATIVE");break;
+                        case R_ARM_GOTOFF:printf("R_ARM_GOTOFF");break;
+                        case R_ARM_GOTPC:printf("R_ARM_GOTPC");break;
+                        case R_ARM_GOT32:printf("R_ARM_GOT32");break;
+                        case R_ARM_PLT32:printf("R_ARM_PLT32");break;
+                        case R_ARM_CALL:printf("R_ARM_CALL");break;
+                        case R_ARM_JUMP24:printf("R_ARM_JUMP24");break;
+                    } printf("    Nom:%8s\n", str + convert32(sym[i].st_name)); //ELF32_R_SYM(convert32(rel[i].r_info)));
+                    printf("\n");
+            }printf("\n");
+        } 
         if (convert32(shdr[i].sh_type) == (Elf32_Word) SHT_RELA){
             reltab = (Elf32_Shdr *) &shdr[i];
             rela = (Elf32_Rela *) (elf_start + convert32(reltab->sh_offset));
@@ -80,51 +124,7 @@ void table_relocation32(char *elf_start, unsigned int taille){
                         case R_ARM_CALL:printf("R_ARM_CALL\n");break;
                         case R_ARM_JUMP24:printf("R_ARM_JUMP24\n");break;
                     }
-                    switch(ELF32_R_TYPE(convert32(rela[j].r_info))){ 
-                        case R_X86_64_NONE:printf("R_X86_64_NONE ");break;
-                        case R_X86_64_64:printf("R_X86_64_64 ");break;
-                        case R_X86_64_PC32:printf("R_X86_64_PC32 ");break;
-                        case R_X86_64_GOT32:printf("R_X86_64_GOT32 ");break;
-                        case R_X86_64_PLT32:printf("R_X86_64_PLT32 ");break;
-                        case R_X86_64_COPY:printf("R_X86_64_COPY ");break;
-                        case R_X86_64_GLOB_DAT:printf("R_X86_64_GLOB_DAT ");break;
-                        case R_X86_64_JUMP_SLOT:printf("R_X86_64_JUMP_SLOT ");break;
-                        case R_X86_64_RELATIVE:printf("R_X86_64_RELATIVE ");break;
-                        case R_X86_64_GOTPCREL:printf("R_X86_64_GOTPCREL ");break;
-                        case R_X86_64_32:printf("R_X86_64_32 ");break;
-                        case R_X86_64_32S:printf("R_X86_64_32S ");break;
-                        case R_X86_64_16:printf("R_X86_64_16 ");break;
-                        case R_X86_64_PC16:printf("R_X86_64_PC16 ");break;
-                        case R_X86_64_8:printf("R_X86_64_8 ");break;
-                        case R_X86_64_PC8:printf("R_X86_64_PC8 ");break;
-                        case R_X86_64_DTPMOD64:printf("R_X86_64_DTPMOD64 ");break;
-                        case R_X86_64_DTPOFF64:printf("R_X86_64_DTPOFF64 ");break;
-                        case R_X86_64_TPOFF64:printf("R_X86_64_TPOFF64 ");break;
-                        case R_X86_64_TLSGD:printf("R_X86_64_TLSGD ");break;
-                        case R_X86_64_TLSLD:printf("R_X86_64_TLSLD ");break;
-                        case R_X86_64_DTPOFF32:printf("R_X86_64_DTPOFF32 ");break;
-                        case R_X86_64_GOTTPOFF:printf("R_X86_64_GOTTPOFF ");break;
-                        case R_X86_64_TPOFF32:printf("R_X86_64_TPOFF32 ");break;
-                        case R_X86_64_PC64:printf("R_X86_64_PC64 ");break;
-                        case R_X86_64_GOTOFF64:printf("R_X86_64_GOTOFF64 ");break;
-                        case R_X86_64_GOTPC32:printf("R_X86_64_GOTPC32 ");break;
-                        case R_X86_64_GOT64:printf("R_X86_64_GOT64 ");break;
-                        case R_X86_64_GOTPCREL64:printf("R_X86_64_GOTPCREL64 ");break;
-                        case R_X86_64_GOTPC64:printf("R_X86_64_GOTPC64 ");break;
-                        case R_X86_64_GOTPLT64:printf("R_X86_64_GOTPLT64 ");break;
-                        case R_X86_64_PLTOFF64:printf("R_X86_64_PLTOFF64 ");break;
-                        case R_X86_64_SIZE32:printf("R_X86_64_SIZE32 ");break;
-                        case R_X86_64_SIZE64:printf("R_X86_64_SIZE64 ");break;
-                        case R_X86_64_GOTPC32_TLSDESC:printf("R_X86_64_GOTPC32_TLSDESC ");break;
-                        case R_X86_64_TLSDESC_CALL:printf("R_X86_64_TLSDESC_CALL ");break;
-                        case R_X86_64_TLSDESC:printf("R_X86_64_TLSDESC ");break;
-                        case R_X86_64_IRELATIVE:printf("R_X86_64_IRELATIVE ");break;
-                        case R_X86_64_RELATIVE64:printf("R_X86_64_RELATIVE64 ");break;
-                        case R_X86_64_GOTPCRELX:printf("R_X86_64_GOTPCRELX ");break;
-                        case R_X86_64_REX_GOTPCRELX:printf("R_X86_64_REX_GOTPCRELX ");break;
-                        case R_X86_64_NUM:printf("R_X86_64_NUM ");break;
-                        default:break;
-                    }printf("\n");
+                    printf("\n");
             }printf("\n");
         } 
     }
@@ -206,51 +206,7 @@ void table_relocation64(char *elf_start, unsigned int taille){
                         case R_ARM_CALL:printf("R_ARM_CALL\n");break;
                         case R_ARM_JUMP24:printf("R_ARM_JUMP24\n");break;
                     }
-                    switch(ELF64_R_TYPE(rela[j].r_info)){ 
-                        case R_X86_64_NONE:printf("R_X86_64_NONE ");break;
-                        case R_X86_64_64:printf("R_X86_64_64 ");break;
-                        case R_X86_64_PC32:printf("R_X86_64_PC32 ");break;
-                        case R_X86_64_GOT32:printf("R_X86_64_GOT32 ");break;
-                        case R_X86_64_PLT32:printf("R_X86_64_PLT32 ");break;
-                        case R_X86_64_COPY:printf("R_X86_64_COPY ");break;
-                        case R_X86_64_GLOB_DAT:printf("R_X86_64_GLOB_DAT ");break;
-                        case R_X86_64_JUMP_SLOT:printf("R_X86_64_JUMP_SLOT ");break;
-                        case R_X86_64_RELATIVE:printf("R_X86_64_RELATIVE ");break;
-                        case R_X86_64_GOTPCREL:printf("R_X86_64_GOTPCREL ");break;
-                        case R_X86_64_32:printf("R_X86_64_32 ");break;
-                        case R_X86_64_32S:printf("R_X86_64_32S ");break;
-                        case R_X86_64_16:printf("R_X86_64_16 ");break;
-                        case R_X86_64_PC16:printf("R_X86_64_PC16 ");break;
-                        case R_X86_64_8:printf("R_X86_64_8 ");break;
-                        case R_X86_64_PC8:printf("R_X86_64_PC8 ");break;
-                        case R_X86_64_DTPMOD64:printf("R_X86_64_DTPMOD64 ");break;
-                        case R_X86_64_DTPOFF64:printf("R_X86_64_DTPOFF64 ");break;
-                        case R_X86_64_TPOFF64:printf("R_X86_64_TPOFF64 ");break;
-                        case R_X86_64_TLSGD:printf("R_X86_64_TLSGD ");break;
-                        case R_X86_64_TLSLD:printf("R_X86_64_TLSLD ");break;
-                        case R_X86_64_DTPOFF32:printf("R_X86_64_DTPOFF32 ");break;
-                        case R_X86_64_GOTTPOFF:printf("R_X86_64_GOTTPOFF ");break;
-                        case R_X86_64_TPOFF32:printf("R_X86_64_TPOFF32 ");break;
-                        case R_X86_64_PC64:printf("R_X86_64_PC64 ");break;
-                        case R_X86_64_GOTOFF64:printf("R_X86_64_GOTOFF64 ");break;
-                        case R_X86_64_GOTPC32:printf("R_X86_64_GOTPC32 ");break;
-                        case R_X86_64_GOT64:printf("R_X86_64_GOT64 ");break;
-                        case R_X86_64_GOTPCREL64:printf("R_X86_64_GOTPCREL64 ");break;
-                        case R_X86_64_GOTPC64:printf("R_X86_64_GOTPC64 ");break;
-                        case R_X86_64_GOTPLT64:printf("R_X86_64_GOTPLT64 ");break;
-                        case R_X86_64_PLTOFF64:printf("R_X86_64_PLTOFF64 ");break;
-                        case R_X86_64_SIZE32:printf("R_X86_64_SIZE32 ");break;
-                        case R_X86_64_SIZE64:printf("R_X86_64_SIZE64 ");break;
-                        case R_X86_64_GOTPC32_TLSDESC:printf("R_X86_64_GOTPC32_TLSDESC ");break;
-                        case R_X86_64_TLSDESC_CALL:printf("R_X86_64_TLSDESC_CALL ");break;
-                        case R_X86_64_TLSDESC:printf("R_X86_64_TLSDESC ");break;
-                        case R_X86_64_IRELATIVE:printf("R_X86_64_IRELATIVE ");break;
-                        case R_X86_64_RELATIVE64:printf("R_X86_64_RELATIVE64 ");break;
-                        case R_X86_64_GOTPCRELX:printf("R_X86_64_GOTPCRELX ");break;
-                        case R_X86_64_REX_GOTPCRELX:printf("R_X86_64_REX_GOTPCRELX ");break;
-                        case R_X86_64_NUM:printf("R_X86_64_NUM ");break;
-                        default:break;
-                    }printf("\n");
+                    printf("\n");
             }printf("\n");
         } 
     }
