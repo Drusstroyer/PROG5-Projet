@@ -7,7 +7,7 @@ all: $(progs)
 read_elf: Affiche_entete_elf.o entete_elf.o table_section_elf.o converter.o read_section_elf.o table_symbole.o table_relocation_elf.o 
 	$(CC) -o $@ $^ 
 
-renum : renumerotation.o
+renum : renumerotation.o converter.o
 	$(CC) -o $@ $^
 
 Affiche_entete_elf.o: Affiche_entete_elf.c Affiche_entete_elf.h
