@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -g
+CFLAGS=-Wno-unused-variable -Wno-unused-but-set-variable -Wall -g 
 progs=read_elf renum
 
 all: $(progs)
