@@ -33,11 +33,11 @@ Elf32_Ehdr* entete_elf(FILE * f){
         return NULL;
     }
 
-   /*if (ehdr->e_ident[EI_CLASS] != ELFCLASS32) {
+   if (ehdr->e_ident[EI_CLASS] != ELFCLASS32) {
 		fprintf(stderr, "Pas en 32 bit ELF\n");
 		return NULL;
 	}
-
+    /*
     if (ehdr->e_type != ET_NONE) {
 		fprintf(stderr, "Pas de type de fichier défini\n");
 		return NULL;
@@ -140,7 +140,7 @@ int main(int argc, char *argv[]){
         }
         
     }
-
+    fclose(f);
     return 0;
 
 }
