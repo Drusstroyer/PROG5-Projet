@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -g
-progs=read_elf test_symbole
+progs=read_elf
 
 all: $(progs)
 
@@ -34,8 +34,6 @@ converter.o: converter.c converter.h
 table_relocation_elf.o: table_relocation_elf.c table_relocation_elf.h
 	$(CC) -c $(CFLAGS) $<
 
-Test_Symbole.o : Test_Symbole.c table_symbole.c table_symbole.h Affiche_symbole.h
-	$(CC) -c $(CFLAGS) $<
 		
 clean: 
 	rm -r -f $(progs) *.o *.txt
