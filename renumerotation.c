@@ -49,7 +49,6 @@ void copieelf(char* fin, char* fout) {
         printf ("Erreur de mapping pour %s\n", fout);
         exit(EXIT_FAILURE);
     }
-    //printf("dst : %s \n", dst);
 
     /* copie mémoire d'un fichier vers l'autre */
     memcpy(dst,src,size);
@@ -79,17 +78,23 @@ void supprsection(FILE* f){
          fseek(f,ehdr->e_shoff + i * sizeof(shdr), SEEK_SET);
          fread(&shdr, 1, sizeof(shdr), f);
          shdr = convertshdr(shdr);
-
-         switch(shdr.sh_type){
-             case SHT_REL: 
-                 type = "REL";
-                 char *mem = mmap(0, shdr.sh_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, 0, 0);
-                 memset(mem, 0, shdr.sh_size);
-             default: 
-                 type = "BALLEC";
-                 break;
-         }
          
+         switch(shdr.sh_type){
+            case SHT_REL: 
+                type = "REL";
+                char *mem;
+                if ((mem = mmap(0, shdr.sh_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, 0, 0)) == (caddr_t) -1) {
+                    printf("Code erreur : %d \n", errno);
+                    printf ("Erreur de mapping\n");
+                    exit(EXIT_FAILURE);
+                }
+                memset(mem, 0, shdr.sh_size);
+                msync(mem, shdr.sh_size, MS_SYNC);
+                munmap(mem, shdr.sh_size);
+            default: 
+                type = "BALLEC";
+                break;
+         }
          
          printf("[Nr] : %d, type : %s \n", i, type);
      }
