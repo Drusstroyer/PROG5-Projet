@@ -8,6 +8,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 
 void copieelf(char* fin, char* fout) {
     int fd, fdout;
@@ -16,20 +17,39 @@ void copieelf(char* fin, char* fout) {
 
     /* Ouvrir le fichier à copier */
     fd = open(fin, O_RDWR);
+    if (fd < 0) {
+        printf("Impossible d'ouvrir %s \n", fin);
+        exit(EXIT_FAILURE);
+    }
 
     /* Créer la copie */
-    fdout = open(fout, O_RDWR | O_CREAT);
+    fdout = open(fout, O_RDWR | O_CREAT | O_TRUNC);
+    if (fdout < 0) {
+        printf("Impossible d'ouvrir %s \n", fout);
+        exit(EXIT_FAILURE);
+    }
 
     /* Récupérer la taille du fichier à copier (pour mmap) */
-
     size = lseek(fd, 0, SEEK_END);
+    //printf("size : %ld \n", size);
     ftruncate(fdout,size);
 
+    lseek(fdout,size-1,SEEK_SET);
+    write (fdout, "", 1);
+
     /* mmap du fichier à copier */
-    src = mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
+    if ((src = mmap(0, size, PROT_READ, MAP_SHARED, fd, 0)) == (caddr_t) -1) {
+        printf ("Erreur de mapping pour %s\n", fin);
+        exit(EXIT_FAILURE);
+    }
 
     /* mmap de la copie */
-    dst = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fdout, 0);
+    if ((dst = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fdout, 0)) == (caddr_t) -1) {
+        printf("Code erreur : %d \n", errno);
+        printf ("Erreur de mapping pour %s\n", fout);
+        exit(EXIT_FAILURE);
+    }
+    //printf("dst : %s \n", dst);
 
     /* copie mémoire d'un fichier vers l'autre */
     memcpy(dst,src,size);
@@ -63,17 +83,16 @@ void supprsection(FILE* f){
          switch(shdr.sh_type){
              case SHT_REL: 
                  type = "REL";
-                 char *mem = mmap(0, shdr.sh_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+                 char *mem = mmap(0, shdr.sh_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, 0, 0);
                  memset(mem, 0, shdr.sh_size);
              default: 
                  type = "BALLEC";
                  break;
          }
-
+         
+         
          printf("[Nr] : %d, type : %s \n", i, type);
-
      }
-
  }
 
 int main (int argc, char *argv[]) {
