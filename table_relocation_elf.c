@@ -145,7 +145,7 @@ void table_relocation64(char *elf_start, unsigned int taille){
     //memset(exec,0x0,taille);
     hdr = (Elf64_Ehdr *) elf_start;
     //hdr = convertpointhdr(hdr);
-
+    int ok = 0;
     shdr = (Elf64_Shdr *) (elf_start + hdr->e_shoff);
     char *str = (char *) (elf_start + shdr[hdr->e_shstrndx].sh_offset);
     for(int i=0;i< hdr->e_shnum;i++){
@@ -155,8 +155,17 @@ void table_relocation64(char *elf_start, unsigned int taille){
         if (strcmp(&str[shdr[i].sh_name], ".dynstr") == 0){
          	strtab = (Elf64_Shdr *) &shdr[i]; 
         }      
+        if (shdr[i].sh_type == (Elf32_Word) SHT_RELA){
+            ok=1;
+        }
+        if (shdr[i].sh_type == (Elf32_Word) SHT_REL){
+            ok=1;
+        }   
     }
-
+    if (ok == 0){
+        printf("Il n'y a pas de réadressages dans ce fichier.\n");
+        return;
+    }
     for(int i=0;i< hdr->e_shnum;i++){
         if (shdr[i].sh_type == (Elf64_Word) SHT_RELA){
             reltab = (Elf64_Shdr *) &shdr[i];

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mman.h>
 
 
 #include "entete_elf.h"
@@ -11,6 +12,16 @@
 #include "table_symbole.h"
 #include "table_relocation_elf.h"
 #include "converter.h"
+
+int check_version32(char *buf, unsigned int taille){
+    Elf32_Ehdr* hdr = NULL;
+    char* exec = mmap(NULL, taille, PROT_READ | PROT_WRITE | PROT_EXEC,
+                      MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+    hdr = (Elf32_Ehdr *) (buf);
+    if(hdr->e_ident[EI_CLASS] == ELFCLASS32){
+        return 0;
+    }return -1;
+}
 
 Elf32_Ehdr* entete_elf(FILE * f){
 
@@ -96,6 +107,23 @@ int main(int argc, char *argv[]){
 
         if(strcmp(argv[i],"-h")==0){
 
+<<<<<<< HEAD
+            if(check_version32(buf,sizeof buf) == 0){
+                elf_print_HDR(header);
+            }else{
+                printf("On ne peut pas traiter un fichier en 64 bit...\n");
+                return -1;
+            }
+        }
+        else if(strcmp(argv[i],"-S")==0){
+            if(check_version32(buf,sizeof buf) == 0)
+                section_elf(f, header);
+            else {
+                printf("On ne peut pas traiter un fichier en 64 bit...\n");
+                return -1;
+            }
+
+=======
             elf_print_HDR(header);
             was_a_sec = 1;
 
@@ -104,6 +132,7 @@ int main(int argc, char *argv[]){
 
             section_elf(f, header);
             was_a_sec = 1;
+>>>>>>> 7f254eb213c32a8e0736088511e7ade27dc87a14
         }
         else if(strcmp(argv[i],"-x")==0){
             
@@ -112,7 +141,12 @@ int main(int argc, char *argv[]){
             sec_name = argv[i + 1];
 
             if (strcmp(sec_name, "") != 0){
-                read_section(f, header, sec_name);
+                if(check_version32(buf,sizeof buf) == 0)
+                    read_section(f, header, sec_name);
+                else {
+                    printf("On ne peut pas traiter un fichier en 64 bit...\n");
+                    return -1;
+                }
             }
             else {
                 printf("L'argument %s passé pour la section n'est pas valide\n", argv[i + 1]);
@@ -122,13 +156,30 @@ int main(int argc, char *argv[]){
             was_a_sec = 1;
         }else if(strcmp(argv[i],"-r")==0){
 
+<<<<<<< HEAD
+            if(check_version32(buf,sizeof buf) == 0)
+                table_relocation32(buf,sizeof(buf));
+            else {
+                table_relocation64(buf,sizeof buf);
+            }
+=======
                 table_relocation64(buf,sizeof(buf));
                 was_a_sec = 1;
+>>>>>>> 7f254eb213c32a8e0736088511e7ade27dc87a14
 
         }else if(strcmp(argv[i],"-s")==0){
 
+            if(check_version32(buf,sizeof buf) ==0 )
                 table_symbole(buf,sizeof(buf));
+<<<<<<< HEAD
+            else {
+                printf("On ne peut pas traiter un fichier en 64 bit...\n");
+                return -1;
+            }
+
+=======
                 was_a_sec = 1;
+>>>>>>> 7f254eb213c32a8e0736088511e7ade27dc87a14
         }
         else 
         {
