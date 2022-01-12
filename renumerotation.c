@@ -32,7 +32,7 @@ void copieelf(char* fin, char* fout) {
     dst = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fdout, 0);
 
     /* copie mémoire d'un fichier vers l'autre */
-    memcpy(dst, src, size);
+    memcpy(dst,src,size);
 
     close(fd);
     close(fdout);
@@ -40,40 +40,41 @@ void copieelf(char* fin, char* fout) {
 
 void supprsection(FILE* f){
 
-    Elf32_Ehdr *ehdr = malloc(sizeof(Elf32_Ehdr));
+     Elf32_Ehdr *ehdr = malloc(sizeof(Elf32_Ehdr));
 
-    fseek(f,0,SEEK_SET);
-    size_t n = fread(ehdr, 1, sizeof(Elf32_Ehdr), f);
+     fseek(f,0,SEEK_SET);
+     size_t n = fread(ehdr, 1, sizeof(Elf32_Ehdr), f);
 
-    Elf32_Shdr shdr;
+     Elf32_Shdr shdr;
 
-    ehdr = convertpointhdr(ehdr);
-    fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
-    fread(&shdr, 1, sizeof(shdr), f);
-    shdr = convertshdr(shdr);
+     ehdr = convertpointhdr(ehdr);
+     fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
+     fread(&shdr, 1, sizeof(shdr), f);
+     shdr = convertshdr(shdr);
 
-    char* type = "";
+     char* type = "";
 
-    for (int i = 0; i <= ehdr->e_shnum - 1; i++) {
+     for (int i = 0; i <= ehdr->e_shnum - 1; i++) {
 
-        fseek(f,ehdr->e_shoff + i * sizeof(shdr), SEEK_SET);
-        fread(&shdr, 1, sizeof(shdr), f);
-        shdr = convertshdr(shdr);
+         fseek(f,ehdr->e_shoff + i * sizeof(shdr), SEEK_SET);
+         fread(&shdr, 1, sizeof(shdr), f);
+         shdr = convertshdr(shdr);
 
-        switch(shdr.sh_type){
-            case SHT_REL: 
-                type = "REL";
-                break;
-            default: 
-                type = "BALLEC";
-                break;
-        }
+         switch(shdr.sh_type){
+             case SHT_REL: 
+                 type = "REL";
+                 char *mem = mmap(0, shdr.sh_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+                 memset(mem, 0, shdr.sh_size);
+             default: 
+                 type = "BALLEC";
+                 break;
+         }
 
-        printf("[Nr] : %d, type : %s \n", i, type);
+         printf("[Nr] : %d, type : %s \n", i, type);
 
-    }
+     }
 
-}
+ }
 
 int main (int argc, char *argv[]) {
 
