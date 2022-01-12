@@ -46,11 +46,11 @@ void table_relocation32(char *elf_start, unsigned int taille){
         if (convert32(shdr[i].sh_type) == (Elf32_Word) SHT_REL){
             reltab = (Elf32_Shdr *) &shdr[i];
             rel = (Elf32_Rel *) (elf_start + convert32(reltab->sh_offset));
+            printf("Offset      Info      Type      Nom\n");
             for(int j=0;j<convert32(reltab->sh_size) / convert32(reltab->sh_entsize);j++){
-                printf("%012x ",convert32(rel[j].r_offset));// le decalage
-                printf(" %012x ",convert32(rel[j].r_info)); 
+                printf("%08x ",convert32(rel[j].r_offset));// le decalage
+                printf(" %08x ",convert32(rel[j].r_info)); 
                     switch(ELF32_R_TYPE(convert32(rel[j].r_info))){ //le type
-                    
                         case R_ARM_NONE: printf("R_ARM_NONE");break;
                         case R_ARM_PC24: printf("R_ARM_PC24");break;
                         case R_ARM_ABS32:printf("R_ARM_ABS32");break;
@@ -81,18 +81,18 @@ void table_relocation32(char *elf_start, unsigned int taille){
                         case R_ARM_PLT32:printf("R_ARM_PLT32");break;
                         case R_ARM_CALL:printf("R_ARM_CALL");break;
                         case R_ARM_JUMP24:printf("R_ARM_JUMP24");break;
-                    } printf("    Nom:%8s\n", str + convert32(sym[i].st_name)); //ELF32_R_SYM(convert32(rel[i].r_info)));
+                    } printf("%8s\n", str + convert32(sym[i].st_name)); //ELF32_R_SYM(convert32(rel[i].r_info)));
                     printf("\n");
             }printf("\n");
         } 
         if (convert32(shdr[i].sh_type) == (Elf32_Word) SHT_RELA){
             reltab = (Elf32_Shdr *) &shdr[i];
             rela = (Elf32_Rela *) (elf_start + convert32(reltab->sh_offset));
+            printf("Offset      Info      Type      Nom\n");
             for(int j=0;j<convert32(reltab->sh_size) / convert32(reltab->sh_entsize);j++){
-                printf("%012x ",convert32(rela[j].r_offset));// le decalage
-                printf(" %012x ",convert32(rela[j].r_info)); 
+                printf("%08x ",convert32(rela[j].r_offset));// le decalage
+                printf(" %08x ",convert32(rela[j].r_info)); 
                     switch(ELF32_R_TYPE(convert32(rela[j].r_info))){ //le type
-                    
                         case R_ARM_NONE: printf("R_ARM_NONE\n");break;
                         case R_ARM_PC24: printf("R_ARM_PC24\n");break;
                         case R_ARM_ABS32:printf("R_ARM_ABS32\n");break;
@@ -170,11 +170,11 @@ void table_relocation64(char *elf_start, unsigned int taille){
         if (shdr[i].sh_type == (Elf64_Word) SHT_RELA){
             reltab = (Elf64_Shdr *) &shdr[i];
             rela = (Elf64_Rela *) (elf_start + reltab->sh_offset);
+            printf("Offset      Info      Type      Nom\n");
             for(int j=0;j<reltab->sh_size / reltab->sh_entsize;j++){
-                printf("%012lx ",rela[j].r_offset);// le decalage
-                printf(" %012lx ",rela[j].r_info); 
+                printf("%08lx ",rela[j].r_offset);// le decalage
+                printf(" %08lx ",rela[j].r_info); 
                     switch(ELF64_R_TYPE(rela[j].r_info)){ //le type
-                    
                         case R_ARM_NONE: printf("R_ARM_NONE\n");break;
                         case R_ARM_PC24: printf("R_ARM_PC24\n");break;
                         case R_ARM_ABS32:printf("R_ARM_ABS32\n");break;
