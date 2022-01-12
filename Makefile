@@ -4,7 +4,7 @@ progs=read_elf
 
 all: $(progs)
 
-read_elf: Affiche_entete_elf.o entete_elf.o table_section_elf.o converter.o read_section_elf.o table_symbole.o Affiche_symbole.o table_relocation_elf.o 
+read_elf: Affiche_entete_elf.o entete_elf.o table_section_elf.o converter.o read_section_elf.o table_symbole.o table_relocation_elf.o 
 	$(CC) -o $@ $^ 
 
 Affiche_entete_elf.o: Affiche_entete_elf.c Affiche_entete_elf.h
@@ -16,10 +16,7 @@ entete_elf.o : entete_elf.c entete_elf.h
 table_section_elf.o: table_section_elf.c table_section_elf.h
 	$(CC) -c $(CFLAGS) $<
 
-Affiche_symbole.o: Affiche_symbole.c Affiche_symbole.h
-	$(CC) -c $(CFLAGS) $<
-
-table_symbole.o: table_symbole.c table_symbole.h Affiche_symbole.h
+table_symbole.o: table_symbole.c table_symbole.h
 	$(CC) -c $(CFLAGS) $<
 
 read_section_elf.o: read_section_elf.c read_section_elf.h
