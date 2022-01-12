@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
             was_a_sec = 1;
         }else if(strcmp(argv[i],"-r")==0){
 
-                table_relocation(buf,sizeof(buf));
+                table_relocation64(buf,sizeof(buf));
 
         }else if(strcmp(argv[i],"-s")==0){
 

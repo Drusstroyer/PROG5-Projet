@@ -9,14 +9,11 @@
 #include <sys/mman.h>
  
 void table_symbole(char *elf_start, unsigned int taille){
-    Elf32_Ehdr      *hdr     = NULL;
-    Elf32_Phdr      *phdr    = NULL;
-    Elf32_Shdr      *shdr    = NULL;
-    Elf32_Sym       *syms    = NULL;
+    Elf32_Ehdr* hdr = NULL;
+    Elf32_Shdr* shdr = NULL;
     Elf32_Shdr* symtab=NULL;
     Elf32_Shdr* strtab=NULL;
     
-    int i = 0;
     char* exec = mmap(NULL, taille, PROT_READ | PROT_WRITE | PROT_EXEC,
                       MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
     //memset(exec,0x0,taille);
@@ -68,7 +65,7 @@ void table_symbole(char *elf_start, unsigned int taille){
                     case STB_LOPROC: printf("Lien: LOPROC");break;
                     case STB_HIPROC: printf("Lien: HIPROC");break;
                 }
-        printf("    Nom:%08s\n", str + convert32(sym[i].st_name));
+        printf("    Nom:%8s\n", str + convert32(sym[i].st_name));
       //printf("Taille:%-4d   name %d : %s\n",convert32(sym[i].st_size),i, (char *) str + convert32(sym[i].st_name));
 	}
 }
