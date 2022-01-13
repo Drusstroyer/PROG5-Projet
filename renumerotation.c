@@ -63,47 +63,37 @@ void copieelf(char* fin, char* fout) {
     close(fdout);
 }
 
-void supprsection(FILE* f){
+void supprsection(char* buf, unsigned int taille){
 
-     Elf32_Ehdr *ehdr = malloc(sizeof(Elf32_Ehdr));
+    Elf32_Ehdr* ehdr = NULL;
+    Elf32_Shdr* shdr = NULL;
 
-     fseek(f,0,SEEK_SET);
-     size_t n = fread(ehdr, 1, sizeof(Elf32_Ehdr), f);
+    char* mem = mmap(NULL, taille, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, 0, 0);
 
-     Elf32_Shdr shdr;
+    ehdr = (Elf32_Ehdr *) buf;
+    ehdr = convertpointhdr(ehdr);
 
-     ehdr = convertpointhdr(ehdr);
-     fseek(f, ehdr->e_shoff + ehdr->e_shstrndx * ehdr->e_shentsize, SEEK_SET);
-     fread(&shdr, 1, sizeof(shdr), f);
-     shdr = convertshdr(shdr);
+    shdr = (Elf32_Shdr *) (buf + ehdr->e_shoff);
 
-     char* type = "";
+    char* type = "";
 
-     for (int i = 0; i <= ehdr->e_shnum - 1; i++) {
-
-         fseek(f,ehdr->e_shoff + i * sizeof(shdr), SEEK_SET);
-         fread(&shdr, 1, sizeof(shdr), f);
-         shdr = convertshdr(shdr);
-         
-         switch(shdr.sh_type){
+    for(int i=0 ; i < ehdr->e_shnum ; i++) {
+        switch(convert32(shdr[i].sh_type)){
             case SHT_REL: 
                 type = "REL";
-                char *mem;
-                if ((mem = mmap(0, shdr.sh_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, 0, 0)) == (caddr_t) -1) {
-                    printf("Code erreur : %d \n", errno);
-                    printf ("Erreur de mapping\n");
-                    exit(EXIT_FAILURE);
-                }
-                memset(mem, 0, shdr.sh_size);
-                msync(mem, shdr.sh_size, MS_SYNC);
-                munmap(mem, shdr.sh_size);
+                memset(&shdr[i], 0, convert32(shdr[i].sh_size));
+                printf("Mémoire changée pour la section %d \n", i);
+                break;
             default: 
                 type = "BALLEC";
                 break;
-         }
-         
-         printf("[Nr] : %d, type : %s \n", i, type);
-     }
+        }
+    
+    printf("%d %s \n", i, type);
+    }    
+
+    msync(mem, taille, MS_SYNC);
+    munmap(mem,taille);
  }
 
 int main (int argc, char *argv[]) {
@@ -112,7 +102,11 @@ int main (int argc, char *argv[]) {
 
     FILE *fp = fopen(argv[2],"rb");
 
-    supprsection(fp);
+    char buf[1048576];
+
+    fread(buf,sizeof buf,1,fp);
+
+    supprsection(buf, sizeof(buf));
 
     return 0;
 
