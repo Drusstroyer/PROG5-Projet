@@ -16,14 +16,14 @@ void copieelf(char* fin, char* fout) {
     size_t size;
 
     /* Ouvrir le fichier à copier */
-    fd = open(fin, O_RDWR);
+    fd = open(fin, O_RDWR, 0666);
     if (fd < 0) {
         printf("Impossible d'ouvrir %s \n", fin);
         exit(EXIT_FAILURE);
     }
 
     /* Créer la copie */
-    fdout = open(fout, O_RDWR | O_CREAT | O_TRUNC);
+    fdout = open(fout, O_RDWR | O_CREAT | O_TRUNC, 0666);
     if (fdout < 0) {
         printf("Impossible d'ouvrir %s \n", fout);
         exit(EXIT_FAILURE);
@@ -52,6 +52,12 @@ void copieelf(char* fin, char* fout) {
 
     /* copie mémoire d'un fichier vers l'autre */
     memcpy(dst,src,size);
+    printf("Fichier bien copié \n");
+
+    msync(src, size, MS_SYNC);
+    msync(dst,size,MS_SYNC);
+    munmap(src,size);
+    munmap(dst,size);
 
     close(fd);
     close(fdout);
