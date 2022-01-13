@@ -5,16 +5,16 @@ void elf_print_HDR(Elf32_Ehdr *ehdr){
 	ehdr = convertpointhdr(ehdr);
 	printf("ELF HEADER:\n");
 	switch(ehdr->e_machine){
-		case 0x0E: printf("Machine: No Machine\n");break;
-		case 0x1E: printf("Machine: AT&T WE 32100\n");break;
-		case 0x2E: printf("Machine: SPARC\n");break;
-		case 0x3E: printf("Machine: Intel Architecture\n");break;
-		case 0x4E: printf("Machine: Motorola 68000\n");break;
-		case 0x5E: printf("Machine: Motorola 88000\n");break;
-		case 0x7E: printf("Machine: Intel 80860\n");break; 
-		case 0x8E: printf("Machine: MIPS RS3000 Big-Endian\n");break;
-		case 0x10E: printf("Machine: MIPS RS4000 Big-Endian\n");break;
-		case 0x28E: printf("Machine: ARM\n");break;
+		case 0x0: printf("Machine: No Machine\n");break;
+		case 0x1: printf("Machine: AT&T WE 32100\n");break;
+		case 0x2: printf("Machine: SPARC\n");break;
+		case 0x3: printf("Machine: Intel Architecture\n");break;
+		case 0x4: printf("Machine: Motorola 68000\n");break;
+		case 0x5: printf("Machine: Motorola 88000\n");break;
+		case 0x7: printf("Machine: Intel 80860\n");break; 
+		case 0x8: printf("Machine: MIPS RS3000 Big-Endian\n");break;
+		case 0x10: printf("Machine: MIPS RS4000 Big-Endian\n");break;
+		case 0x28: printf("Machine: ARM\n");break;
 		default: printf("Machine: Reserved for future use\n");break;
 	}
 	switch(ehdr->e_ident[EI_CLASS]){
