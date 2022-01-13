@@ -6,6 +6,6 @@
 #define _RENUMEROTATION_SECTION_
 
 void copieelf(char* fin, char* fout);
-void supprsection(FILE *f);
+void supprsection(char* buf, unsigned int taille);
 
 #endif
