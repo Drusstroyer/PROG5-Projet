@@ -82,7 +82,7 @@ void supprsection(char* buf, unsigned int taille){
             case SHT_REL: 
                 type = "REL";
                 shdr[i].sh_type = (Elf32_Word) SHT_NULL; 
-                memset(&shdr[i], 0, convert32(shdr[i].sh_size));
+                memset(&shdr[i], 0, convert32(shdr[i].sh_size));           
                 printf("Mémoire changée pour la section %d \n", i);
                 break;
             default: 
