@@ -81,18 +81,21 @@ void supprsection(char* buf, unsigned int taille){
         switch(convert32(shdr[i].sh_type)){
             case SHT_REL: 
                 type = "REL";
+                shdr[i].sh_type = (Elf32_Word) SHT_NULL; 
                 memset(&shdr[i], 0, convert32(shdr[i].sh_size));
                 printf("Mémoire changée pour la section %d \n", i);
                 break;
             default: 
-                type = "BALLEC";
+                type = "AUTRE";
                 break;
         }
     
     printf("%d %s \n", i, type);
     }    
 
-    msync(mem, taille, MS_SYNC);
+    if(msync(mem, taille, MS_SYNC) == -1){
+        printf("Erreur synchronisation memmap\n");
+    }
     munmap(mem,taille);
  }
 
@@ -100,7 +103,7 @@ int main (int argc, char *argv[]) {
 
     copieelf(argv[1],argv[2]);
 
-    FILE *fp = fopen(argv[2],"rb");
+    FILE *fp = fopen(argv[2],"rw");
 
     char buf[1048576];
 
@@ -108,9 +111,9 @@ int main (int argc, char *argv[]) {
 
     supprsection(buf, sizeof(buf));
 
+    fclose(fp);
+
     return 0;
 
 }
 
-
-   
